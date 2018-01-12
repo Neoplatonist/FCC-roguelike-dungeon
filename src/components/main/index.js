@@ -4,8 +4,20 @@ import { connect } from 'react-redux'
 // import { 
 
 // } from '../../redux/actions'
+import { background, you, testMap } from './entities'
 
-import { entityRect, entityCirc } from './utils'
+/**
+ *  TODO: Build Map
+ *
+ *  1. Either an Array or a 2d Array
+ *  2. Function renders this array to canvas objects
+ *  3. Function that takes the initial array and 
+ *     use it to calculate boundaries.
+ *  4. Use boundaries and check player position.
+ * 
+ * @class Main
+ * @extends {Component}
+**/
 
 class Main extends Component {
   constructor() {
@@ -16,7 +28,12 @@ class Main extends Component {
     this.interval = 0
     this.box = {
       loc: [0,0],
-      size: [20,20]
+      size: [120,120]
+    }
+
+    this.youEntity = {
+      loc: [0,0],
+      r: 10
     }
     this.fps = 30
     this.locked = true
@@ -29,83 +46,69 @@ class Main extends Component {
 
   componentDidMount() {
     this.context = this.canvas.getContext('2d')
-    this.canvas.width = this.state.width
-    this.canvas.height = this.state.height
 
+    this.youEntity.loc = [this.canvas.width / 2, this.canvas.height / 2]
+    this.box.loc = [
+      (this.youEntity.loc[0]) - (this.box.size[0] / 2),
+      (this.youEntity.loc[1]) - (this.box.size[1] / 2)
+    ]
     this.drawAll()
 
     // Moves Player
     window.addEventListener('keydown', this.playerMoveStart, false)
-    window.addEventListener('keyup', this.playerMoveStop, false)
   }
 
   playerMoveStart = (e) => {
     if (!this.locked) {
       // Moving Up ( W key )
-      if (e.keyCode === 87 && this.box.loc[1] > 0) {
-        this.box.loc[1] -= 5
+      if (
+        e.keyCode === 87 && 
+        this.box.loc[1] < this.youEntity.loc[1] - this.youEntity.r
+      ) {
+        this.box.loc[1] += 5
       }
 
       // Moving Down ( S key )
       if (
         e.keyCode === 83 && 
-        this.box.loc[1] < this.canvas.height - this.box.size[1]
+        this.box.loc[1] + this.box.size[1] > this.youEntity.loc[1] + this.youEntity.r
       ) {
-        this.box.loc[1] += 5
+        this.box.loc[1] -= 5
       }
 
       // Moving Left ( A key )
-      if (e.keyCode === 65 && this.box.loc[0] > 0) {
-        this.box.loc[0] -= 5
+      if (
+        e.keyCode === 65 && 
+        this.box.loc[0] < this.youEntity.loc[0] - this.youEntity.r
+      ) {
+        this.box.loc[0] += 5
       }
 
       // Moving Right ( D key )
       if (
         e.keyCode === 68 && 
-        this.box.loc[0] < this.canvas.width - this.box.size[0]
+        this.box.loc[0] + this.box.size[0] > 
+          this.youEntity.loc[0] + this.youEntity.r
       ) {
-        this.box.loc[0] += 5
+        this.box.loc[0] -= 5
       }
     }
   }
 
-  playerMoveStop = () => {
-
-  }
-
-  background = () => {
-    // Background
-    entityRect(this, 0, 0, this.state.width, this.state.height, 'black')
-  } 
-
-  you = () => {
-    // Lil'U
-    entityCirc(this, this.state.width / 2, this.state.height / 2, 10, 'white')
-  }
-
-  test = () => {
-    entityRect(
-      this, 
-      this.box.loc[0], this.box.loc[1], 
-      this.box.size[0], this.box.size[1],
-      'green'
-    )
-  }
-
   drawAll = () => {
-    this.background()
-    this.test()
-    this.you()
+    background(this, this.state.width, this.state.height)
+    testMap(this, this.box.loc, this.box.size)
+    you(this, this.youEntity.loc[0], this.youEntity.loc[1], this.youEntity.r)
   } 
 
-  handleMoveBox = () => {
+  handleInterval = () => {
     this.locked = false
     this.interval = setInterval(() => {
       this.drawAll()
     }, 1000/this.fps)
   }
 
-  handleMoveBoxClear = () => {
+  handleIntervalClear = () => {
     this.locked = true
     clearInterval(this.interval)
   }
@@ -115,12 +118,12 @@ class Main extends Component {
       <main>
         <canvas 
           ref={el => this.canvas = el}
-          // width={this.state.width} 
-          // height={this.props.height}
+          width={this.state.width} 
+          height={this.state.height}
         />
 
-        <button onClick={this.handleMoveBox}>move box</button>
-        <button onClick={this.handleMoveBoxClear}>clear</button>
+        <button onClick={this.handleInterval}>move box</button>
+        <button onClick={this.handleIntervalClear}>clear</button>
       </main>
     )
   }
