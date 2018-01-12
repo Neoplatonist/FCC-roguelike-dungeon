@@ -1,0 +1,102 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+header {
+  background-color: green;
+  padding: 1em;
+  margin-bottom: 3em;
+}
+
+header h1 {
+  text-align: center;
+  color: white;
+  margin: 0;
+}
+
+#generations {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.container-small {
+  margin: auto;
+  width: 900px;
+  padding: 50px;
+  display: grid;
+  grid-template-rows: repeat(30, 1fr);
+  grid-template-columns: repeat(40, 1fr);
+  background-color: lightslategrey;
+}
+
+.container-large {
+  margin: auto;
+  width: 900px;
+  padding: 50px;
+  display: grid;
+  grid-template-rows: repeat(50, 1fr);
+  grid-template-columns: repeat(70, 1fr);
+  background-color: lightslategrey;
+}
+
+.cell-small {
+  text-align: center;
+  margin: 1px;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cell-large {
+  text-align: center;
+  margin: 1px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.empty {
+  background-color: white;
+}
+
+.alive {
+  background-color: black;
+}
+
+.dead {
+  background-color: red;
+}
+
+.born {
+  background-color: blue;
+}
+
+#controls {
+  margin: 3em 5em 0 5em;
+  padding: 1em;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: row;  /* I want to change this to column */
+  flex-wrap: wrap;  
+  height: auto;
+  background-color: darkslategray;
+  border-radius: 5px;
+}
+
+#controls button {
+  padding: 20px;
+  width: 150px;
+  margin: 0 auto;
+  background-color: lightsteelblue;
+  border-radius: 5px;
+  font-size: 1.3em;
+  cursor: pointer;
+}
+
