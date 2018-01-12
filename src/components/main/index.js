@@ -18,7 +18,8 @@ class Main extends Component {
       loc: [0,0],
       size: [20,20]
     }
-    this.fps = 60
+    this.fps = 30
+    this.locked = true
 
     this.state = {
       width: 900,
@@ -32,6 +33,44 @@ class Main extends Component {
     this.canvas.height = this.state.height
 
     this.drawAll()
+
+    // Moves Player
+    window.addEventListener('keydown', this.playerMoveStart, false)
+    window.addEventListener('keyup', this.playerMoveStop, false)
+  }
+
+  playerMoveStart = (e) => {
+    if (!this.locked) {
+      // Moving Up ( W key )
+      if (e.keyCode === 87 && this.box.loc[1] > 0) {
+        this.box.loc[1] -= 5
+      }
+
+      // Moving Down ( S key )
+      if (
+        e.keyCode === 83 && 
+        this.box.loc[1] < this.canvas.height - this.box.size[1]
+      ) {
+        this.box.loc[1] += 5
+      }
+
+      // Moving Left ( A key )
+      if (e.keyCode === 65 && this.box.loc[0] > 0) {
+        this.box.loc[0] -= 5
+      }
+
+      // Moving Right ( D key )
+      if (
+        e.keyCode === 68 && 
+        this.box.loc[0] < this.canvas.width - this.box.size[0]
+      ) {
+        this.box.loc[0] += 5
+      }
+    }
+  }
+
+  playerMoveStop = () => {
+
   }
 
   background = () => {
@@ -60,20 +99,14 @@ class Main extends Component {
   } 
 
   handleMoveBox = () => {
+    this.locked = false
     this.interval = setInterval(() => {
-      if (
-        this.box.loc[0] < this.canvas.width - this.box.size[0] && 
-        this.box.loc[1] < this.canvas.height - this.box.size[1]
-      ) {
-        this.box.loc[0] += 1
-        this.box.loc[1] += 1
-
-        this.drawAll()
-      }
+      this.drawAll()
     }, 1000/this.fps)
   }
 
   handleMoveBoxClear = () => {
+    this.locked = true
     clearInterval(this.interval)
   }
 
