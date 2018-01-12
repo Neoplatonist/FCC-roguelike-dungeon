@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 // import { 
 
 // } from '../../redux/actions'
-import { background, you, testMap } from './entities'
+import Entities from './entities'
 
 /**
  *  TODO: Build Map
@@ -32,11 +32,15 @@ class Main extends Component {
     }
 
     this.youEntity = {
-      loc: [0,0],
+      x: 0,
+      y: 0,
       r: 10
     }
     this.fps = 30
     this.locked = true
+    this.entities = 0
+
+    this.mapSize = [1920, 1080]
 
     this.state = {
       width: 900,
@@ -45,12 +49,16 @@ class Main extends Component {
   }
 
   componentDidMount() {
+    this.entities = new Entities()
+    
     this.context = this.canvas.getContext('2d')
 
-    this.youEntity.loc = [this.canvas.width / 2, this.canvas.height / 2]
+    this.youEntity.x = this.canvas.width / 2
+    this.youEntity.y = this.canvas.height / 2
+    
     this.box.loc = [
-      (this.youEntity.loc[0]) - (this.box.size[0] / 2),
-      (this.youEntity.loc[1]) - (this.box.size[1] / 2)
+      (this.youEntity.x) - (this.box.size[0] / 2),
+      (this.youEntity.y) - (this.box.size[1] / 2)
     ]
     this.drawAll()
 
@@ -63,7 +71,7 @@ class Main extends Component {
       // Moving Up ( W key )
       if (
         e.keyCode === 87 && 
-        this.box.loc[1] < this.youEntity.loc[1] - this.youEntity.r
+        this.box.loc[1] < this.youEntity.y - this.youEntity.r
       ) {
         this.box.loc[1] += 5
       }
@@ -71,7 +79,7 @@ class Main extends Component {
       // Moving Down ( S key )
       if (
         e.keyCode === 83 && 
-        this.box.loc[1] + this.box.size[1] > this.youEntity.loc[1] + this.youEntity.r
+        this.box.loc[1] + this.box.size[1] > this.youEntity.y + this.youEntity.r
       ) {
         this.box.loc[1] -= 5
       }
@@ -79,7 +87,7 @@ class Main extends Component {
       // Moving Left ( A key )
       if (
         e.keyCode === 65 && 
-        this.box.loc[0] < this.youEntity.loc[0] - this.youEntity.r
+        this.box.loc[0] < this.youEntity.x - this.youEntity.r
       ) {
         this.box.loc[0] += 5
       }
@@ -88,7 +96,7 @@ class Main extends Component {
       if (
         e.keyCode === 68 && 
         this.box.loc[0] + this.box.size[0] > 
-          this.youEntity.loc[0] + this.youEntity.r
+          this.youEntity.x + this.youEntity.r
       ) {
         this.box.loc[0] -= 5
       }
@@ -96,9 +104,9 @@ class Main extends Component {
   }
 
   drawAll = () => {
-    background(this, this.state.width, this.state.height)
-    testMap(this, this.box.loc, this.box.size)
-    you(this, this.youEntity.loc[0], this.youEntity.loc[1], this.youEntity.r)
+    this.entities.background(this, this.state.width, this.state.height)
+    this.entities.testMap(this, this.box.loc, this.box.size)
+    this.entities.you(this, this.youEntity.x, this.youEntity.y, this.youEntity.r)
   } 
 
   handleInterval = () => {
