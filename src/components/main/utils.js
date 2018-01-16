@@ -13,6 +13,19 @@ export const entityCirc = function(that, x,y, radius, color) {
   that.context.fill()
 }
 
-// export default class Map {
-  
-// }
+export const checkBound = function(data) {
+  if (
+    data[0] === 255 &&
+    data[1] === 255 &&
+    data[2] === 255 &&
+    data[3] === 255
+  ) {
+    return true
+  }
+
+  return false
+}
+
+export const rand = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}

@@ -5,6 +5,8 @@ import { connect } from 'react-redux'
 
 // } from '../../redux/actions'
 import Entities from './entities'
+import { checkBound } from './utils'
+import Map from './maps.js'
 
 /**
  *  TODO: Build Map
@@ -28,7 +30,11 @@ class Main extends Component {
     this.interval = 0
     this.box = {
       loc: [0,0],
-      size: [120,120]
+      size: [200,200]
+    }
+    this.box2 = {
+      loc: [0,0],
+      size: [40,201]
     }
 
     this.youEntity = {
@@ -36,22 +42,36 @@ class Main extends Component {
       y: 0,
       r: 10
     }
+    this.speed = 5
     this.fps = 30
     this.locked = true
     this.entities = 0
-
+    this.img = 0
+    this.map = 0
+    this.mapLoc = [0, 0]
     this.mapSize = [1920, 1080]
+    this.keyMap = {
+      87: 'up',
+      83: 'down',
+      65: 'left',
+      68: 'right'
+    }
+    this.move = {
+      up: false,
+      down: false,
+      left: false,
+      right: false
+    }
 
     this.state = {
       width: 900,
-      height: 675
+      height: 680
     }
   }
 
   componentDidMount() {
     this.entities = new Entities()
-    
-    this.context = this.canvas.getContext('2d')
+    this.maps = new Map()
 
     this.youEntity.x = this.canvas.width / 2
     this.youEntity.y = this.canvas.height / 2
@@ -60,65 +80,102 @@ class Main extends Component {
       (this.youEntity.x) - (this.box.size[0] / 2),
       (this.youEntity.y) - (this.box.size[1] / 2)
     ]
-    this.drawAll()
+    this.box2.loc = [
+      this.box.loc[0] + this.box.size[0] - this.box2.size[0],
+      this.box.loc[1] - this.box2.size[1] + 1
+    ]
+
+    this.img = new Image()
+    this.img.src = this.entities.createMap(this.mapSize, this.box, this.box2)
+
+    this.maps.init()
 
     // Moves Player
     window.addEventListener('keydown', this.playerMoveStart, false)
+    window.addEventListener('keyup', this.playerMoveStop, false)
+
+    this.context = this.canvas.getContext('2d')
+    this.drawAll()
+    window.requestAnimationFrame(this.animation)
   }
 
   playerMoveStart = (e) => {
-    if (!this.locked) {
-      // Moving Up ( W key )
-      if (
-        e.keyCode === 87 && 
-        this.box.loc[1] < this.youEntity.y - this.youEntity.r
-      ) {
-        this.box.loc[1] += 5
-      }
+    let key = this.keyMap[e.keyCode]
+    this.move[key] = true
+  }
 
-      // Moving Down ( S key )
-      if (
-        e.keyCode === 83 && 
-        this.box.loc[1] + this.box.size[1] > this.youEntity.y + this.youEntity.r
-      ) {
-        this.box.loc[1] -= 5
-      }
-
-      // Moving Left ( A key )
-      if (
-        e.keyCode === 65 && 
-        this.box.loc[0] < this.youEntity.x - this.youEntity.r
-      ) {
-        this.box.loc[0] += 5
-      }
-
-      // Moving Right ( D key )
-      if (
-        e.keyCode === 68 && 
-        this.box.loc[0] + this.box.size[0] > 
-          this.youEntity.x + this.youEntity.r
-      ) {
-        this.box.loc[0] -= 5
-      }
-    }
+  playerMoveStop = (e) => {
+    let key = this.keyMap[e.keyCode]
+    this.move[key] = false
   }
 
   drawAll = () => {
     this.entities.background(this, this.state.width, this.state.height)
-    this.entities.testMap(this, this.box.loc, this.box.size)
+    this.context.drawImage(this.img, this.mapLoc[0], this.mapLoc[1])
     this.entities.you(this, this.youEntity.x, this.youEntity.y, this.youEntity.r)
+    // this.entities.testPixel(
+    //   this,
+    //   this.youEntity.x - this.youEntity.r -2,
+    //   this.youEntity.y,
+    //   1
+    // )
   } 
 
-  handleInterval = () => {
-    this.locked = false
-    this.interval = setInterval(() => {
-      this.drawAll()
-    }, 1000/this.fps)
+
+  update = () => {
+    if (this.move.up) {
+      let data = this.context.getImageData(
+        this.youEntity.x,
+        this.youEntity.y - this.youEntity.r -1,
+        1,1
+      ).data
+
+      if (checkBound(data)) {
+        this.mapLoc[1] += this.speed
+      }
+    }
+
+    if (this.move.down) {
+      let data = this.context.getImageData(
+        this.youEntity.x,
+        this.youEntity.y + this.youEntity.r +1,
+        1,1
+      ).data
+
+      if (checkBound(data)) {
+        this.mapLoc[1] -= this.speed
+      }
+    }
+
+    if (this.move.left) {
+      let data = this.context.getImageData(
+        this.youEntity.x - this.youEntity.r -2,
+        this.youEntity.y,
+        1,1
+      ).data
+
+      if (checkBound(data)) {
+        this.mapLoc[0] += this.speed
+      }
+    }
+
+    if (this.move.right) {
+      let data = this.context.getImageData(
+        this.youEntity.x + this.youEntity.r +1,
+        this.youEntity.y,
+        1,1
+      ).data
+
+      if (checkBound(data)) {
+        this.mapLoc[0] -= this.speed
+      }
+    }
   }
 
-  handleIntervalClear = () => {
-    this.locked = true
-    clearInterval(this.interval)
+  animation = () => {
+    this.update()
+    this.drawAll()
+    window.requestAnimationFrame(this.animation)
   }
 
   render() {
@@ -130,8 +187,8 @@ class Main extends Component {
           height={this.state.height}
         />
 
-        <button onClick={this.handleInterval}>move box</button>
-        <button onClick={this.handleIntervalClear}>clear</button>
+        {/* <button onClick={this.handleInterval}>move box</button> */}
+        {/* <button onClick={this.handleIntervalClear}>clear</button> */}
       </main>
     )
   }
