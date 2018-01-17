@@ -19,7 +19,7 @@ export default class Entities {
     entityCirc(that, x,y,r, 'red')
   }
 
-  createMap(size, box, box2) {
+  createMap(that) {
     let canvas = document.createElement('canvas')
     canvas.id = 'tmp'
     document.body.appendChild(canvas)
@@ -27,8 +27,27 @@ export default class Entities {
     this.canvas = document.getElementById('tmp')
     this.context = this.canvas.getContext('2d')
 
-    this.canvas.width = size[0]
-    this.canvas.height = size[1]
+    this.canvas.width = that.map.size[0]
+    this.canvas.height = that.map.size[1]
+
+    let box = {
+      loc: [0,0],
+      size: [200,200]
+    }
+
+    let box2 = {
+      loc: [0,0],
+      size: [40,201]
+    }
+
+    box.loc = [
+      (that.youEntity.x) - (box.size[0] / 2),
+      (that.youEntity.y) - (box.size[1] / 2)
+    ]
+    box2.loc = [
+      box.loc[0] + box.size[0] - box2.size[0],
+      box.loc[1] - box2.size[1] + 1
+    ]
 
     entityRect(
       this, 

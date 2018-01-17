@@ -3,6 +3,8 @@ import Entities from './entities'
 import { checkBound } from './utils'
 import Map from './maps.js'
 
+import stateTree from './stateTree'
+
 /**
  *  TODO: Build Map
  *
@@ -16,46 +18,7 @@ import Map from './maps.js'
 export default class Main extends Component {
   constructor() {
     super()
-
-    this.canvas = ''
-    this.context = ''
-    this.interval = 0
-    this.box = {
-      loc: [0,0],
-      size: [200,200]
-    }
-    this.box2 = {
-      loc: [0,0],
-      size: [40,201]
-    }
-
-    this.youEntity = {
-      x: 0,
-      y: 0,
-      r: 10
-    }
-    this.speed = 5
-    this.locked = true
-    this.entities = 0
-    this.img = 0
-    this.map = {
-      loc: [0,0],
-      size: [1920,1080]
-    }
-
-    this.keyMap = {
-      87: 'up',
-      83: 'down',
-      65: 'left',
-      68: 'right'
-    }
-
-    this.move = {
-      up: false,
-      down: false,
-      left: false,
-      right: false
-    }
+    Object.assign(this, stateTree)
 
     this.state = {
       width: 900,
@@ -69,18 +32,9 @@ export default class Main extends Component {
 
     this.youEntity.x = this.canvas.width / 2
     this.youEntity.y = this.canvas.height / 2
-    
-    this.box.loc = [
-      (this.youEntity.x) - (this.box.size[0] / 2),
-      (this.youEntity.y) - (this.box.size[1] / 2)
-    ]
-    this.box2.loc = [
-      this.box.loc[0] + this.box.size[0] - this.box2.size[0],
-      this.box.loc[1] - this.box2.size[1] + 1
-    ]
 
     this.img = new Image()
-    this.img.src = this.entities.createMap(this.map.size, this.box, this.box2)
+    this.img.src = this.entities.createMap(this)
 
     this.maps.init()
 

@@ -7,7 +7,8 @@ let roomObj = {
   dimY: 0,
   locX: 0, 
   locY: 0,
-  id: 0
+  id: 0,
+  type: ''
 }
 
 export default class Map {
@@ -15,7 +16,7 @@ export default class Map {
     [ this.min , this.max ] = [ 2, 30 ]
   }
 
-  init() {
+  init(that) {
     mapArr.push(initRoom())
     console.log(mapArr[0])
 
@@ -33,22 +34,30 @@ export default class Map {
       left: topLeft[0] - 0
     }
 
-    let big = ''
-    if (dist.top > dist.right) {
-      big = 'top'
+    let doorX
+    let [ doorYmin, doorYmax ] = [ topLeft[1], bottomRight[1]]
+    if (dist.left > dist.right) {
+      // left
+      doorX = topLeft[0]
+
+      console.log(doorX,doorYmin)
+      console.log(doorX,doorYmax)
+
+      let doorY = rand(doorYmin, doorYmax)
+      console.log(doorX, doorY)
+
+      
     } else {
-      big = 'right'
+      // right
+      doorX = topLeft[0] + bottomRight[0]
     }
-
-    if (dist[big] < dist.bottom) {
-      big = 'bottom'
-    }
-
-    if (dist[big] < dist.left) {
-      big = 'left'
-    }
-
     
+
+
+
+
+
+
 
 
 
@@ -136,7 +145,8 @@ const initRoom = () => {
     dimY: dimY,
     locX: rand(0, mapSize[0]-dimX), 
     locY: rand(0, mapSize[1]-dimY),
-    id: 0
+    id: 0,
+    type: 'start'
   }
 
   return room
