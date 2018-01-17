@@ -48,8 +48,7 @@ export default class Map {
       big = 'left'
     }
 
-    console.log(dist)
-    console.log(dist[big])
+    
 
 
 

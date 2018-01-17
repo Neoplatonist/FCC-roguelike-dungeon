@@ -1,5 +1,5 @@
 {
-  "name": "react-game-of-life",
+  "name": "react-roguelike-dungeon",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
