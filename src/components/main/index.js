@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import Entities from './entities'
 import { checkBound } from './utils'
-import Map from './maps.js'
-
 import stateTree from './stateTree'
 
 /**
@@ -28,15 +26,13 @@ export default class Main extends Component {
 
   componentDidMount() {
     this.entities = new Entities()
-    this.maps = new Map()
 
     this.youEntity.x = this.canvas.width / 2
     this.youEntity.y = this.canvas.height / 2
 
-    this.img = new Image()
-    this.img.src = this.entities.createMap(this)
+    // this.img.src = this.entities.createMap(this)
 
-    this.maps.init()
+    this.img.src = this.entities.createMap2(this)
 
     // Moves Player
     window.addEventListener('keydown', this.playerMoveStart, false)
@@ -57,9 +53,21 @@ export default class Main extends Component {
   }
 
   drawAll = () => {
-    this.entities.background(this, this.state.width, this.state.height)
+    this.entities.background(this.context, this.state.width, this.state.height)
     this.context.drawImage(this.img, this.map.loc[0], this.map.loc[1])
-    this.entities.you(this, this.youEntity.x, this.youEntity.y, this.youEntity.r)
+    this.entities.you(
+      this.context, 
+      this.youEntity.x,
+      this.youEntity.y, 
+      this.youEntity.r
+    )
+    
+    // this.context.fillStyle = 'red' 
+    // this.context.font = '24px serif'
+    // this.context.fillText(
+    //   'x: ' + this.map.loc[0] + ' y: ' + this.map.loc[1],
+    //   5, 20
+    // )
   } 
 
 
@@ -71,9 +79,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      if (checkBound(data)) {
+      // if (checkBound(data)) {
         this.map.loc[1] += this.speed
-      }
+      // }
     }
 
     if (this.move.down) {
@@ -83,9 +91,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      if (checkBound(data)) {
+      // if (checkBound(data)) {
         this.map.loc[1] -= this.speed
-      }
+      // }
     }
 
     if (this.move.left) {
@@ -95,9 +103,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      if (checkBound(data)) {
+      // if (checkBound(data)) {
         this.map.loc[0] += this.speed
-      }
+      // }
     }
 
     if (this.move.right) {
@@ -107,9 +115,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      if (checkBound(data)) {
+      // if (checkBound(data)) {
         this.map.loc[0] -= this.speed
-      }
+      // }
     }
   }
 

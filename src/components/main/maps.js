@@ -1,10 +1,11 @@
 import { rand } from './utils'
 
 const mapSize = [192, 108] // 1920 x 1080 
-let mapArr = []
+// const mapSize = [20, 30]
 let roomObj = {
   dimX: 0, 
   dimY: 0,
+  doors: [],
   locX: 0, 
   locY: 0,
   id: 0,
@@ -13,172 +14,116 @@ let roomObj = {
 
 export default class Map {
   constructor() {
-    [ this.min , this.max ] = [ 2, 30 ]
+    [ this.min , this.max ] = [ 4, 30 ]
+
+    this.hallPad = 4
+    this.mapArr = []
+    this.prevRoom = {
+      loc: [],
+      doorLoc: []
+    }
   }
 
-  init(that) {
-    mapArr.push(initRoom())
-    console.log(mapArr[0])
-
-    let topLeft = [mapArr[0].locX, mapArr[0].locY]
-    let bottomRight = [
-      mapArr[0].locX + mapArr[0].dimX, 
-      mapArr[0].locY + mapArr[0].dimY
-    ]
-
-    // Distances 
-    let dist = {
-      top: topLeft[1] - 0,
-      right: mapSize[0] - bottomRight[0],
-      bottom: mapSize[1] - bottomRight[1],
-      left: topLeft[0] - 0
+  init() {
+    for (let i = 0; i < 20; i++) {
+      this.createRoom(i)
     }
 
-    let doorX
-    let [ doorYmin, doorYmax ] = [ topLeft[1], bottomRight[1]]
-    if (dist.left > dist.right) {
-      // left
-      doorX = topLeft[0]
+    for (let i = 0; i < this.mapArr.length; i++) {
+      for (let j = i + 1; j < this.mapArr.length; j++) {
+        // Get the first room
+        let a = {
+          x1: this.mapArr[i].locX,
+          y1: this.mapArr[i].locY,
+          x2: this.mapArr[i].locX + this.mapArr[i].dimX,
+          y2: this.mapArr[i].locY + this.mapArr[i].dimY
+        }
 
-      console.log(doorX,doorYmin)
-      console.log(doorX,doorYmax)
+        // Get the second room
+        let b = {
+          x1: this.mapArr[j].locX,
+          y1: this.mapArr[j].locY,
+          x2: this.mapArr[j].locX + this.mapArr[j].dimX,
+          y2: this.mapArr[j].locY + this.mapArr[j].dimY
+        }
 
-      let doorY = rand(doorYmin, doorYmax)
-      console.log(doorX, doorY)
+        // console.log(this.mapArr[i])
+        // console.log(this.mapArr[j])
 
-      
+        // Check for intersection
+        let xCol = this.checkIntersect(a.x1, a.x2, b.x1, b.x2)
+        let yCol = this.checkIntersect(a.y1, a.y2, b.y1, b.y2)
+
+        if (xCol !== 0 && yCol !== 0) {
+          if (Math.abs(xCol) < Math.abs(yCol)) {
+            // xCol needs to shift
+            if (xCol < 0) {
+              // shift left
+              this.mapArr[j].locX -= xCol * -1 - this.hallPad
+            } else {
+              // shift right
+              this.mapArr[j].locX += xCol + this.hallPad
+            }
+          } else {
+            // yCol needs to shift
+            if (yCol < 0) {
+              // shift down
+              this.mapArr[j].locY += yCol * -1 + this.hallPad
+            } else {
+              // shift up
+              this.mapArr[j].locY -= yCol - this.hallPad
+            }
+          }
+        }
+
+        // console.log(this.mapArr[j])
+      }
+    }
+
+    return this.mapArr
+  }
+  
+  checkIntersect(a1,a2, b1,b2) {
+    // get the min and max a && b
+    let min1 = Math.min(a1,a2)
+    let max1 = Math.max(a1,a2)
+    let min2 = Math.min(b1,b2)
+    let max2 = Math.max(b1,b2)
+
+    if (min1 <= max2 && max1 >= min2) {
+      // calc how much the ranges intersect
+      let dist1 = max2 - min1
+      let dist2 = max1 - min2
+
+      if (dist1 < dist2) {
+        // shift up
+        return dist1
+      } else {
+        // shift down
+        return dist2 *-1
+      }
     } else {
-      // right
-      doorX = topLeft[0] + bottomRight[0]
+      // no problems
+      return 0
     }
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // this.createRoom(1)
-
-    // this.gen = this.generator()
-
-    // console.log(this.gen.next().value)
-    // console.log(this.gen.next().value)
-    // console.log(this.gen.next().value)
-    // console.log(this.gen.next().value)
   }
 
-  // * generator() {
-  //   let [ min, max ] = [ 2, 30 ]
-  //   let i = 0
-
-  //   while(true) {
-  //     i++
-  //     yield {
-  //       dimX: rand(min, max),
-  //       dimY: rand(min, max),
-  //       locX: rand(this.locXmin, this.locXmax),
-  //       locY: rand(this.locYmin, this.locYmax),
-  //       id: i
-  //     }
-  //   }
-  // }
-
-  createRoom(x) {
-    // let finished = false
+  createRoom(i) {
     let room = { ...roomObj }
 
     room = {
       dimX: rand(this.min, this.max),
       dimY: rand(this.min, this.max),
-      locX: rand(0, mapSize[0]),
-      locY: rand(0, mapSize[1]),
-      id: x
+      locX: rand(0, mapSize[0]-3),
+      locY: rand(0, mapSize[1]-3),
+      id: i
     }
 
-    mapArr.push(room)
+    if (room.id === 0) {
+      room.type = 'start'
+    }
 
-    // if (wall) {
-    //   finished = true
-    // }
-
-    // if (!finished) {
-    //   this.createRoom(x++)
-    // }
-  }
-
-  spacing() {
-
+    this.mapArr.push(room)
   }
 }
-
-const initRoom = () => {
-  let [ min, max ] = [ 7, 25 ]
-  let [ dimX, dimY ] = [ rand(min, max), rand(min, max) ]
-  let room = { ...roomObj }
-
-  room = {
-    dimX: dimX, 
-    dimY: dimY,
-    locX: rand(0, mapSize[0]-dimX), 
-    locY: rand(0, mapSize[1]-dimY),
-    id: 0,
-    type: 'start'
-  }
-
-  return room
-}
-
-// const rand = Math.ceil(Math.random() * 10)
-
-// if (rand < 10 && rand > 90) { // 20% room
-//   room(rand)
-// } else if (rand > 10 && rand < 40) { // 30% hallway
-//   hallway()
-// } else ( // 50% empty
-//   // haha tis blank space
-//   console.log('haha tis blank space')
-// )
-
-// function room(rand) {
-//   // THINGS WE WANT!!!
-//   // At least a certain # of rooms
-//   // At least a certain size
-
-//   if (rand < 50) {
-    
-//   }
-// }
-
-// function hallway(rand) {
-//   // THINGS WE WANT!!!
-//   // At least a certain # of hallways
-//   // no more than a certain length
-//   if (rand < 50) {
-    
-//   }
-// }
 

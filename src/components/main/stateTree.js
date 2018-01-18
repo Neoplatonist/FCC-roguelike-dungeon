@@ -3,7 +3,7 @@ module.exports = {
   context: 0,
 
   entities: 0,
-  img: 0,
+  img: new Image(),
 
   keyMap: {
     87: 'up',
@@ -14,6 +14,7 @@ module.exports = {
 
   locked: true,
 
+  // look at later propogating
   map: {
     loc: [0,0],
     size: [1920,1080]
@@ -26,7 +27,7 @@ module.exports = {
     right: false
   },
 
-  speed: 3,
+  speed: 5,
 
   youEntity: {
     x: 0,

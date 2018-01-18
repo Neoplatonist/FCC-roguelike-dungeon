@@ -1,22 +1,27 @@
 import { entityRect, entityCirc } from './utils'
+import Map from './maps.js'
 
 export default class Entities {
-  background(that, x,y) {
+  constructor() {
+    this.maps = new Map()
+  }
+
+  background(context, x,y) {
     // Background
-    entityRect(that, 0, 0, x, y, 'black')
+    entityRect(context, 0, 0, x, y, 'black')
   }
 
-  you(that, x,y, r) {
+  you(context, x,y, r) {
     // Lil'U
-    entityCirc(that, x, y, r, 'green')
+    entityCirc(context, x, y, r, 'green')
   }
 
-  testMap(that, loc, size) {
-    entityRect(that, loc[0], loc[1], size[0], size[1], 'white')
+  testMap(context, loc, size) {
+    entityRect(context, loc[0], loc[1], size[0], size[1], 'white')
   }
 
-  testPixel(that, x,y, r) {
-    entityCirc(that, x,y,r, 'red')
+  testPixel(context, x,y, r) {
+    entityCirc(context, x,y,r, 'red')
   }
 
   createMap(that) {
@@ -50,20 +55,47 @@ export default class Entities {
     ]
 
     entityRect(
-      this, 
+      this.context, 
       box.loc[0], box.loc[1], 
       box.size[0], box.size[1], 
       'white'
     )
 
     entityRect(
-      this, 
+      this.context, 
       box2.loc[0], box2.loc[1], 
       box2.size[0], box2.size[1], 
       'white'
     )
 
     return this.canvas.toDataURL('image/png')
+  }
+
+  createMap2(that) {
+    let arr = this.maps.init()
+    let canvas = document.createElement('canvas')
+    canvas.id = 'tmp'
+    document.body.appendChild(canvas)
+
+    canvas = document.getElementById('tmp')
+    let ctx = canvas.getContext('2d')
+
+    canvas.width = that.map.size[0]
+    canvas.height = that.map.size[1]
+
+    for (let i = 0; i < arr.length; i++) {
+      entityRect(
+        ctx, 
+        arr[i].locX * 10, arr[i].locY * 10, 
+        arr[i].dimX * 10, arr[i].dimY * 10,
+        'grey'
+      )
+    }
+
+    let data = canvas.toDataURL('image/png')
+    document.body.removeChild(canvas)
+
+    return data
   }
 }
 
