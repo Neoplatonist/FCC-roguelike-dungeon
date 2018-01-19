@@ -32,7 +32,7 @@ export default class Main extends Component {
 
     // this.img.src = this.entities.createMap(this)
 
-    this.img.src = this.entities.createMap2(this)
+    this.img.src = this.entities.createMap2(this.maps.size)
 
     // Moves Player
     window.addEventListener('keydown', this.playerMoveStart, false)
@@ -54,7 +54,7 @@ export default class Main extends Component {
 
   drawAll = () => {
     this.entities.background(this.context, this.state.width, this.state.height)
-    this.context.drawImage(this.img, this.map.loc[0], this.map.loc[1])
+    this.context.drawImage(this.img, this.maps.loc[0], this.maps.loc[1])
     this.entities.you(
       this.context, 
       this.youEntity.x,
@@ -65,7 +65,7 @@ export default class Main extends Component {
     this.context.fillStyle = 'red' 
     this.context.font = '24px serif'
     this.context.fillText(
-      'x: ' + this.map.loc[0] + ' y: ' + this.map.loc[1],
+      'x: ' + this.maps.loc[0] + ' y: ' + this.maps.loc[1],
       5, 20
     )
   } 
@@ -80,7 +80,7 @@ export default class Main extends Component {
       ).data
 
       // if (checkBound(data)) {
-        this.map.loc[1] += this.speed
+        this.maps.loc[1] += this.speed
       // }
     }
 
@@ -92,7 +92,7 @@ export default class Main extends Component {
       ).data
 
       // if (checkBound(data)) {
-        this.map.loc[1] -= this.speed
+        this.maps.loc[1] -= this.speed
       // }
     }
 
@@ -104,7 +104,7 @@ export default class Main extends Component {
       ).data
 
       // if (checkBound(data)) {
-        this.map.loc[0] += this.speed
+        this.maps.loc[0] += this.speed
       // }
     }
 
@@ -116,7 +116,7 @@ export default class Main extends Component {
       ).data
 
       // if (checkBound(data)) {
-        this.map.loc[0] -= this.speed
+        this.maps.loc[0] -= this.speed
       // }
     }
   }

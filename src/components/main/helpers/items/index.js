@@ -27,16 +27,16 @@ const itemList = {
       { name: 'dagger',         min: 6,   max: 9 }
     ],
     [
-      { name: 'baseball bat',   min: 8,   max: 12 },
-      { name: 'short sword',    min: 9,   max: 13 }
+      { name: 'baseball bat',   min: 9,   max: 13 },
+      { name: 'short sword',    min: 10,  max: 14 }
     ],
     [
-      { name: 'hammer',         min: 8,   max: 12 },
-      { name: 'rusted sword',   min: 9,   max: 13 }
+      { name: 'hammer',         min: 14,   max: 19 },
+      { name: 'rusted sword',   min: 15,   max: 20 }
     ],
     [
-      { name: 'samurai sword',  min: 15,  max: 20 },
-      { name: 'halberd',        min: 17,  max: 22 }
+      { name: 'samurai sword',  min: 20,  max: 26 },
+      { name: 'halberd',        min: 21,  max: 27 }
     ]
   ]
 }

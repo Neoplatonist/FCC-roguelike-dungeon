@@ -15,7 +15,7 @@ module.exports = {
   locked: true,
 
   // look at later propogating
-  map: {
+  maps: {
     loc: [0,0],
     size: [1920,1080]
   },

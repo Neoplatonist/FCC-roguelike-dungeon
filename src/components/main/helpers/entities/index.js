@@ -74,8 +74,10 @@ export default class Entities {
     return this.canvas.toDataURL('image/png')
   }
 
-  createMap2(that) {
-    let arr = this.maps.init()
+  createMap2(size) {
+    this.maps.init()
+    let all = this.maps.everything()
+
     let canvas = document.createElement('canvas')
     canvas.id = 'tmp'
     document.body.appendChild(canvas)
@@ -83,15 +85,33 @@ export default class Entities {
     canvas = document.getElementById('tmp')
     let ctx = canvas.getContext('2d')
 
-    canvas.width = that.map.size[0]
-    canvas.height = that.map.size[1]
+    canvas.width = size[0]
+    canvas.height = size[1]
 
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < all.rooms.length; i++) {
       entityRect(
         ctx, 
-        arr[i].locX * 10, arr[i].locY * 10, 
-        arr[i].dimX * 10, arr[i].dimY * 10,
-        'grey'
+        all.rooms[i].locX * 10, all.rooms[i].locY * 10, 
+        all.rooms[i].dimX * 10, all.rooms[i].dimY * 10,
+        'white'
+      )
+    }
+
+    for (let i = 0; i < all.enemies.length; i++) {
+      entityRect(
+        ctx, 
+        all.enemies[i].locX * 10, all.enemies[i].locY * 10, 
+        15, 15,
+        all.enemies[i].color
+      )
+    }
+
+    for (let i = 0; i < all.items.length; i++) {
+      entityRect(
+        ctx, 
+        all.items[i].locX * 10, all.items[i].locY * 10, 
+        15, 15,
+        all.items[i].color
       )
     }
 
