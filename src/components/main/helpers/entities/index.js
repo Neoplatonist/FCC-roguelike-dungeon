@@ -1,5 +1,5 @@
-import { entityRect, entityCirc } from './utils'
-import Map from './maps.js'
+import { entityRect, entityCirc } from '../utils'
+import Map from '../maps'
 
 export default class Entities {
   constructor() {
@@ -44,6 +44,9 @@ export default class Entities {
       loc: [0,0],
       size: [40,201]
     }
+
+    console.log((that.youEntity.x) - (box.size[0] / 2))
+    console.log((that.youEntity.y) - (box.size[1] / 2))
 
     box.loc = [
       (that.youEntity.x) - (box.size[0] / 2),

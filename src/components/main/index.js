@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import Entities from './entities'
-import { checkBound } from './utils'
+import Entities from './helpers/entities'
+import { checkBound } from './helpers/utils'
 import stateTree from './stateTree'
 
 /**
@@ -62,12 +62,12 @@ export default class Main extends Component {
       this.youEntity.r
     )
     
-    // this.context.fillStyle = 'red' 
-    // this.context.font = '24px serif'
-    // this.context.fillText(
-    //   'x: ' + this.map.loc[0] + ' y: ' + this.map.loc[1],
-    //   5, 20
-    // )
+    this.context.fillStyle = 'red' 
+    this.context.font = '24px serif'
+    this.context.fillText(
+      'x: ' + this.map.loc[0] + ' y: ' + this.map.loc[1],
+      5, 20
+    )
   } 
 
 

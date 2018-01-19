@@ -4,9 +4,8 @@ import App from './App'
 import { Provider } from 'react-redux'
 
 import store from './redux/store'
-// const canvasMock = require('jest-canvas-mock')
 
-function mockCanvas (window) {
+const mockCanvas = (window) => {
   window.HTMLCanvasElement.prototype.getContext = function () {
       return {
           fillRect: function() {},
@@ -49,7 +48,6 @@ function mockCanvas (window) {
 
   
 it('renders without crashing', () => {
-  const window = document.defaultView
   mockCanvas(window)
   const div = document.createElement('div')
 

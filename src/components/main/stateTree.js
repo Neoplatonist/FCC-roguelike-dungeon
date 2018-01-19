@@ -27,6 +27,13 @@ module.exports = {
     right: false
   },
 
+  player: {
+    weapon: 'fists',
+    health: 100,
+    level: 1,
+    xp: 0
+  },
+
   speed: 5,
 
   youEntity: {
