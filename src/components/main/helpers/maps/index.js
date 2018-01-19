@@ -51,16 +51,16 @@ export default class Map {
       if (random < 20 || random > 80) {
         let enemy = this.enemy.createEnemies(this.lvl)
 
-        enemy.locX = rand(this.mapArr[i].locX + 1, this.mapArr[i].locX + this.mapArr[i].dimX - 1)
-        enemy.locY = rand(this.mapArr[i].locY + 1, this.mapArr[i].locY + this.mapArr[i].dimY - 1)
+        enemy.locX = rand(this.mapArr[i].locX + 2, this.mapArr[i].locX + this.mapArr[i].dimX - 2)
+        enemy.locY = rand(this.mapArr[i].locY + 2, this.mapArr[i].locY + this.mapArr[i].dimY - 2)
 
         this.enemies.push(enemy)
 
       } else if ((random > 20 && random < 35) || (random < 80 && random > 65)) {
         let health = this.item.createHealth()
 
-        health.locX = rand(this.mapArr[i].locX + 1, this.mapArr[i].locX + this.mapArr[i].dimX - 1)
-        health.locY = rand(this.mapArr[i].locY + 1, this.mapArr[i].locY + this.mapArr[i].dimY - 1)
+        health.locX = rand(this.mapArr[i].locX + 2, this.mapArr[i].locX + this.mapArr[i].dimX - 2)
+        health.locY = rand(this.mapArr[i].locY + 2, this.mapArr[i].locY + this.mapArr[i].dimY - 2)
 
         this.items.push(health)
 
@@ -70,8 +70,8 @@ export default class Map {
       ) {
         let weapon = this.item.createWeapon(this.lvl)
 
-        weapon.locX = rand(this.mapArr[i].locX + 1, this.mapArr[i].locX + this.mapArr[i].dimX - 1)
-        weapon.locY = rand(this.mapArr[i].locY + 1, this.mapArr[i].locY + this.mapArr[i].dimY - 1)
+        weapon.locX = rand(this.mapArr[i].locX + 2, this.mapArr[i].locX + this.mapArr[i].dimX - 2)
+        weapon.locY = rand(this.mapArr[i].locY + 2, this.mapArr[i].locY + this.mapArr[i].dimY - 2)
 
         this.items.push(weapon)
         this.placed.weapon = true

@@ -1,7 +1,7 @@
 import { rand } from '../utils' 
 
 const initItem = {
-  color: 'blue',
+  color: 'green',
   damage: 0,
   locX: 0,
   locY: 0,
@@ -10,7 +10,6 @@ const initItem = {
 
 const itemList = { 
   health: {
-    color: 'green',
     min: 15,
     max: 75
   },
@@ -57,7 +56,6 @@ export default class Items {
   createHealth() {
     let item = { ...initItem }
 
-    item.color = itemList.health.color
     item.damage = rand(itemList.health.min, itemList.health.max)
     item.type = 'health'
 
@@ -73,6 +71,7 @@ export default class Items {
       lvl = 1
     }
 
+    item.color = 'orange'
     item.damage = rand(
       itemList.weapons[level][lvl].min, 
       itemList.weapons[level][lvl].max
