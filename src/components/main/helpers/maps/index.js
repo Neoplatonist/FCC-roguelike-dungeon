@@ -1,4 +1,5 @@
 import { rand } from '../utils'
+import Item from '../items'
 
 const mapSize = [192, 108] // 1920 x 1080 
 // const mapSize = [20, 30]
@@ -16,14 +17,17 @@ export default class Map {
   constructor() {
     [ this.min , this.max ] = [ 8, 30 ]
 
-    this.recurNum = 0
-    this.limit = 100
+    this.item = new Item()
+    this.items = []
+
     this.hallPad = 20
+    this.limit = 100
     this.mapArr = []
     this.prevRoom = {
       loc: [],
       doorLoc: []
     }
+    this.recurNum = 0
   }
 
   init() {
@@ -32,6 +36,10 @@ export default class Map {
     }
 
     this.spacer()
+
+    this.item.createHealth()
+    this.item.createWeapon(1)
+
 
     return this.mapArr
   }
