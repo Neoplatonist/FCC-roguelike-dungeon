@@ -88,35 +88,62 @@ export default class Entities {
     canvas.width = size[0]
     canvas.height = size[1]
 
+    entityRect(ctx, 0, 0, canvas.width, canvas.height, 'black')
+
     for (let i = 0; i < all.rooms.length; i++) {
       entityRect(
         ctx, 
-        all.rooms[i].locX * 10, all.rooms[i].locY * 10, 
-        all.rooms[i].dimX * 10, all.rooms[i].dimY * 10,
-        'white'
+        all.rooms[i].locX, all.rooms[i].locY, 
+        all.rooms[i].dimX, all.rooms[i].dimY,
+        'grey'
       )
+
+      for (let j = 0; j < all.rooms[i].doors.length; j++) {
+        entityRect(
+          ctx,
+          all.rooms[i].doors[j].coords[0], all.rooms[i].doors[j].coords[1], 
+          20,20,
+          'yellow'
+        )
+      }
     }
 
-    for (let i = 0; i < all.enemies.length; i++) {
-      entityRect(
-        ctx, 
-        all.enemies[i].locX * 10, all.enemies[i].locY * 10, 
-        15, 15,
-        all.enemies[i].color
-      )
-    }
+    // for (let i = 0; i < all.enemies.length; i++) {
+    //   entityRect(
+    //     ctx, 
+    //     all.enemies[i].locX, all.enemies[i].locY, 
+    //     15, 15,
+    //     all.enemies[i].color
+    //   )
+    // }
 
-    for (let i = 0; i < all.items.length; i++) {
-      entityRect(
-        ctx, 
-        all.items[i].locX * 10, all.items[i].locY * 10, 
-        15, 15,
-        all.items[i].color
-      )
-    }
+    // for (let i = 0; i < all.items.length; i++) {
+    //   entityRect(
+    //     ctx, 
+    //     all.items[i].locX, all.items[i].locY, 
+    //     15, 15,
+    //     all.items[i].color
+    //   )
+    // }
+
+    // for (let i = 0; i < 1; i++) {
+    //   entityRect(
+    //     ctx,
+    //     all.hallways[i].a[0], all.hallways[i].a[1],
+    //     15,15,
+    //     'yellow'
+    //   )
+
+    //   entityRect(
+    //     ctx,
+    //     all.hallways[i].b[0], all.hallways[i].b[1],
+    //     15,15,
+    //     'yellow'
+    //   )
+    // }
 
     let data = canvas.toDataURL('image/png')
-    document.body.removeChild(canvas)
+    // document.body.removeChild(canvas)
 
     return data
   }

@@ -2,7 +2,7 @@ import { rand } from '../utils'
 import Item from '../items'
 import Enemies from '../enemies'
 
-const mapSize = [192, 108] // 1920 x 1080 
+const mapSize = [1920, 1080] // 1920 x 1080 
 // const mapSize = [20, 30]
 let roomObj = {
   dimX: 0, 
@@ -16,20 +16,23 @@ let roomObj = {
 
 export default class Map {
   constructor() {
-    [ this.min , this.max ] = [ 12, 30 ]
+    [ this.min , this.max ] = [ 120, 300 ]
 
+    this.doors = []
+    this.doorSize = 20
     this.item = new Item()
     this.items = []
     this.enemy = new Enemies()
     this.enemies = []
-
-    this.hallPad = 5
+    this.hallway = []
+    this.hallPad = 80
     this.limit = 500
     this.lvl = 1
     this.mapArr = []
-    this.numOfRooms = 15
+    this.numOfRooms = 10
     this.placed = {
       boss: false,
+      stairs: false,
       weapon: false
     }
     this.prevRoom = {
@@ -40,27 +43,164 @@ export default class Map {
   }
 
   init() {
-    for (let i = 0; i < this.numOfRooms; i++) {
-      this.createRoom(i)
+    this.createFirstRoom()
+    this.createRooms()
+  }
+
+  createFirstRoom() {
+    let room = JSON.parse(JSON.stringify(roomObj))
+    room.dimX = rand(this.min, this.max)
+    room.dimY = rand(this.min, this.max)
+    room.locX = rand(this.max, mapSize[0]-this.max)
+    room.locY = rand(this.max, mapSize[1]-this.max)
+    room.type = 'start'
+
+    // Check: enough space for new room
+    // Top
+    if (room.locY - (this.hallPad + this.max) > 0) {
+      room.doors.push({
+        coords: [
+          rand(room.locX + this.doorSize, room.locX + room.dimX - this.doorSize),
+          room.locY - this.doorSize
+        ],
+        dir: 'top',
+        placed: false
+      })
     }
 
-    this.spacer()
+    // Right
+    if (room.locX + room.dimX + (this.hallPad + this.max) < mapSize[0]) {
+      room.doors.push({
+        coords: [
+          room.locX + room.dimX,
+          rand(room.locY + this.doorSize, room.locY + room.dimY - this.doorSize)
+        ],
+        dir: 'right',
+        placed: false
+      })
+    }
 
+    // Bottom
+    if (room.locY + room.dimY + (this.hallPad + this.max) < mapSize[1]) {
+      room.doors.push({
+        coords: [
+          rand(room.locX + this.doorSize, room.locX + room.dimX - this.doorSize),
+          room.locY + room.dimY
+        ],
+        dir: 'bottom',
+        placed: false
+      })
+    }
+
+    // Left
+    if (room.locX - (this.hallPad + this.max) > 0) {
+      console.log('left')
+      room.doors.push({
+        coords: [
+          room.locX - this.doorSize,
+          rand(room.locY + this.doorSize, room.locY + room.dimY - this.doorSize)
+        ],
+        dir: 'left',
+        placed: false
+      })
+    }
+
+    this.mapArr.push(room)
+  }
+
+  createRoom(prevDoor) {
+    let curRoom = JSON.parse(JSON.stringify(roomObj))
+
+    curRoom.dimX = 0
+    curRoom.dimY = 0
+    curRoom.locX = 0
+    curRoom.locY = 0
+  }
+
+  createRooms() {
+    let prevRoom = this.mapArr[this.mapArr.length - 1]
+
+    for (let i = 0; i < prevRoom.doors.length; i++) {
+      this.createRoom(prevRoom.doors[i])
+    }
+  }
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  randomSquares() {
     for (let i = 0; i < this.mapArr.length; i++) {
       let random = rand(0, 100)
       if (random < 20 || random > 80) {
         let enemy = this.enemy.createEnemies(this.lvl)
 
-        enemy.locX = rand(this.mapArr[i].locX + 2, this.mapArr[i].locX + this.mapArr[i].dimX - 2)
-        enemy.locY = rand(this.mapArr[i].locY + 2, this.mapArr[i].locY + this.mapArr[i].dimY - 2)
+        enemy.locX = rand(
+          this.mapArr[i].locX + 20, 
+          this.mapArr[i].locX + this.mapArr[i].dimX - 20
+        )
+        enemy.locY = rand(
+          this.mapArr[i].locY + 20, 
+          this.mapArr[i].locY + this.mapArr[i].dimY - 20
+        )
 
         this.enemies.push(enemy)
 
       } else if ((random > 20 && random < 35) || (random < 80 && random > 65)) {
         let health = this.item.createHealth()
 
-        health.locX = rand(this.mapArr[i].locX + 2, this.mapArr[i].locX + this.mapArr[i].dimX - 2)
-        health.locY = rand(this.mapArr[i].locY + 2, this.mapArr[i].locY + this.mapArr[i].dimY - 2)
+        health.locX = rand(
+          this.mapArr[i].locX + 20, 
+          this.mapArr[i].locX + this.mapArr[i].dimX - 20
+        )
+        health.locY = rand(
+          this.mapArr[i].locY + 20, 
+          this.mapArr[i].locY + this.mapArr[i].dimY - 20
+        )
 
         this.items.push(health)
 
@@ -70,36 +210,19 @@ export default class Map {
       ) {
         let weapon = this.item.createWeapon(this.lvl)
 
-        weapon.locX = rand(this.mapArr[i].locX + 2, this.mapArr[i].locX + this.mapArr[i].dimX - 2)
-        weapon.locY = rand(this.mapArr[i].locY + 2, this.mapArr[i].locY + this.mapArr[i].dimY - 2)
+        weapon.locX = rand(
+          this.mapArr[i].locX + 20, 
+          this.mapArr[i].locX + this.mapArr[i].dimX - 20
+        )
+        weapon.locY = rand(
+          this.mapArr[i].locY + 20, 
+          this.mapArr[i].locY + this.mapArr[i].dimY - 20
+        )
 
         this.items.push(weapon)
         this.placed.weapon = true
       }
     }
-
-    // // Room Intersect Tests
-    // let aObj = { ...roomObj }
-    // let bObj = { ...roomObj }
-
-    // aObj = {
-    //   dimX: 20, 
-    //   dimY: 20,
-    //   locX: 35, 
-    //   locY: 24
-    // }
-
-    // // 35 + 20 = x = 55
-    // // 24 + 20 = y = 44
-    // bObj = {
-    //   dimX: 17, 
-    //   dimY: 21,
-    //   locX: 17, 
-    //   locY: 20
-    // }
-
-    // this.mapArr.push(aObj)
-    // this.mapArr.push(bObj)
   }
   
   checkIntersect(a1,a2, b1,b2) {
@@ -123,127 +246,22 @@ export default class Map {
     }
   }
 
-  createRoom(i) {
-    let room = { ...roomObj }
+  createDoors() {
 
-    
-    room.dimX = rand(this.min, this.max)
-    room.dimY = rand(this.min, this.max)
-    room.locX = rand(30, mapSize[0] -30)
-    room.locY = rand(30, mapSize[1] -30)
-    room.id = i
+  }
 
-    if (room.id === 0) {
-      room.type = 'start'
-    }
+  createHalls() {
 
-    this.mapArr.push(room)
   }
 
   everything() {
-    this.enemies //? 
+    // this.enemies //? 
     return {
       items: this.items,
       enemies: this.enemies,
+      hallways: this.hallway,
       rooms: this.mapArr
     }
-  }
-
-  spacer() {
-    let recur = false
-    this.recurNum++
-
-    for (let i = 0; i < this.mapArr.length; i++) {
-      for (let j = 0; j < this.mapArr.length; j++) {
-        // console.log(this.mapArr[i])
-        // console.log(this.mapArr[j])
-
-        // Check for intersects
-        let xCol = this.checkIntersect(
-          this.mapArr[i].locX,
-          this.mapArr[i].locX + this.mapArr[i].dimX,
-          this.mapArr[j].locX,
-          this.mapArr[j].locX + this.mapArr[j].dimX
-        )
-
-        let yCol = this.checkIntersect(
-          this.mapArr[i].locY,
-          this.mapArr[i].locY + this.mapArr[i].dimY,
-          this.mapArr[j].locY,
-          this.mapArr[j].locY + this.mapArr[j].dimY
-        )
-
-        // if both xCol and yCol then they are intersecting
-        if (xCol !== 0 && yCol !== 0) {
-          recur = true
-
-          if (Math.abs(xCol) < Math.abs(yCol)) {
-
-            let dist = Math.floor((Math.abs(xCol) + this.hallPad) / 2)
-
-            // xCol needs to shift
-            if (xCol < 0) {
-              // shift left
-              this.mapArr[i].locX -= dist
-              this.mapArr[j].locX += dist
-            } else {
-              // shift right
-              this.mapArr[i].locX += dist
-              this.mapArr[j].locX -= dist
-            }
-          } else {
-            // yCol needs to shift
-            let dist = Math.floor((Math.abs(yCol) + this.hallPad) / 2)
-
-            if (yCol < 0) {
-              // shift up
-              this.mapArr[i].locY -= dist
-              this.mapArr[j].locY += dist
-            } else {
-              // shift down
-              this.mapArr[i].locY += dist
-              this.mapArr[j].locY -= dist
-            }
-          }
-        } else {
-          // BUT we should make sure there is 
-          // enough spacing around the sides for 
-          // running our paths
-
-          // 1. Determine which side the room it is on
-          // 2. Check negative space between them
-          // 3. If less than this.hallPad adjust the locX & locY coordinates
-
-          const top = this.mapArr[i].locY - (this.mapArr[j].locY + this.mapArr[j].dimY)
-          const right = this.mapArr[j].locX - (this.mapArr[i].locX + this.mapArr[i].dimX)
-          const bottom = this.mapArr[j].locY - (this.mapArr[i].locY + this.mapArr[i].dimY)
-          const left = this.mapArr[i].locX - (this.mapArr[j].locX + this.mapArr[j].dimX)
-
-          if (top > 0 && top < this.hallPad) {
-            const dist = this.hallPad - top
-            this.mapArr[j].locX -= dist
-          }
-
-          if (right > 0 && right < this.hallPad) {
-            const dist = this.hallPad - right
-            this.mapArr[j].locX += dist
-          }
-
-          if (bottom > 0 && bottom < this.hallPad) {
-            const dist = this.hallPad - bottom
-            this.mapArr[j].locY += dist
-          }
-
-          if (left > 0 && left < this.hallPad) {
-            const dist = this.hallPad - left
-            this.mapArr[j].locX -= dist
-          }
-        }
-      }
-    }
-
-    if (this.recurNum === this.limit) recur = false
-    if (recur) this.spacer()
   }
 }
 
