@@ -32,7 +32,12 @@ export default class Main extends Component {
 
     // this.img.src = this.entities.createMap(this)
 
-    this.img.src = this.entities.createMap2(this.maps.size)
+    let mapObj = this.entities.createMap2(this.maps.size)
+    this.maps.img.src = mapObj.data
+    this.maps.loc[0] = (this.canvas.width / 2) - mapObj.initCoords[0]
+    this.maps.loc[1] = (this.canvas.height / 2) - mapObj.initCoords[1]
+
+    this.fog.src = this.entities.createFog(this.state.width, this.state.height)
 
     // Moves Player
     window.addEventListener('keydown', this.playerMoveStart, false)
@@ -54,7 +59,11 @@ export default class Main extends Component {
 
   drawAll = () => {
     this.entities.background(this.context, this.state.width, this.state.height)
-    this.context.drawImage(this.img, this.maps.loc[0], this.maps.loc[1])
+    // draw map
+    this.context.drawImage(this.maps.img, this.maps.loc[0], this.maps.loc[1])
+    // draw fog
+    // this.context.drawImage(this.fog, 0,0)
+
     this.entities.you(
       this.context, 
       this.youEntity.x,

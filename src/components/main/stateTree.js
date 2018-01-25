@@ -3,7 +3,6 @@ module.exports = {
   context: 0,
 
   entities: 0,
-  img: new Image(),
 
   keyMap: {
     87: 'up',
@@ -13,9 +12,11 @@ module.exports = {
   },
 
   locked: true,
+  fog: new Image(),
 
   // look at later propogating
   maps: {
+    img: new Image(),
     loc: [0,0],
     size: [1920,1080]
   },

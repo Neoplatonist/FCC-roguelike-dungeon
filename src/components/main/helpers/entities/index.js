@@ -143,6 +143,36 @@ export default class Entities {
     // }
 
     let data = canvas.toDataURL('image/png')
+    document.body.removeChild(canvas)
+
+    return {
+      data: data,
+      initCoords: [
+        all.rooms[0].locX + all.rooms[0].dimX / 2,
+        all.rooms[0].locY + all.rooms[0].dimY / 2
+      ]
+    }
+  }
+
+  createFog(x, y) {
+    let canvas = document.createElement('canvas')
+    canvas.id = 'tmp2'
+    document.body.appendChild(canvas)
+
+    canvas = document.getElementById('tmp2')
+    let ctx = canvas.getContext('2d')
+
+    canvas.width = x
+    canvas.height = y
+
+    // background
+    entityRect(ctx, 0, 0, x,y, 'black')
+
+    // shape
+    ctx.globalCompositeOperation = 'xor'
+    entityCirc(ctx, x/2,y/2, 100, '')
+
+    let data = canvas.toDataURL('image/png')
     // document.body.removeChild(canvas)
 
     return data
