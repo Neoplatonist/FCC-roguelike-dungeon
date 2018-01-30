@@ -55,16 +55,13 @@ const itemList = {
 export default class Items {
   createHealth() {
     let item = { ...initItem }
-
     item.damage = rand(itemList.health.min, itemList.health.max)
     item.type = 'health'
-
     return item
   }
 
   createWeapon(level) {
     let item = { ...initItem }
-
     let random = rand(0,100)
     let lvl = 0
     if (random < 15 || random > 85) {

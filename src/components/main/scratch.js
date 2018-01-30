@@ -809,3 +809,786 @@
 //     if (recur) this.spacer()
 //   }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if (
+  locX < this.mapArr[i].locX + this.mapArr[i].dimX &&
+  locX + dimX > this.mapArr[i].locX &&
+  locY < this.mapArr[i].locY + this.mapArr[i].dimY &&
+  locY + dimY > this.mapArr[i].locY
+) {
+  console.log('Collision Detected!')
+
+  // initial room
+  let xa1 = locX
+  let ya1 = locY
+  let xb1 = locX + dimX
+  let yb1 = locY + dimY
+
+  // rooms around
+  let xa2 = this.mapArr[i].locX
+  let ya2 = this.mapArr[i].locY
+  let xb2 = this.mapArr[i].locX + this.mapArr[i].dimX
+  let yb2 = this.mapArr[i].locY + this.mapArr[i].locY
+
+  let diag1x = Math.abs(xa1 - xb2) // inner topLeft - bottomRight
+  let diag1y = Math.abs(ya1 - yb2) // inner topLeft - bottomRight
+  let diag2x = Math.abs(xb1 - xa2) // outer topLeft - bottomRight
+  let diag2y = Math.abs(yb1 - ya2) // outer topLeft - bottomRight
+
+  console.log(diag1x)
+  console.log(diag1y)
+  console.log(diag2x)
+  console.log(diag2y)
+
+  // Check for top collision
+  // if (
+  //   diag1y < diag2y &&
+  //   diag1y < diag1x &&
+  //   diag1y < diag2x
+  // ) {
+  //   console.log('top collision')
+  // }
+  // Check for top collision
+  if (diag1y < diag2y) {
+    if (diag1y < diag1x && diag1y < diag2x) {
+      console.log('top collision')
+    } else if (diag1x < diag2x) {
+      console.log('topLeft collision')
+    } else {
+      console.log('topRight collision')
+    }
+  }
+
+  // Check for right collision
+  if (
+    diag1x < diag2x &&
+    diag1x < diag1y &&
+    diag1x < diag2y
+  ) {
+    console.log('right collision')
+  }
+
+  // Check for bottom collision
+  if (diag2y < diag1y) {
+    if (diag2y < diag1x && diag2y < diag2x) {
+      console.log('bottom collision')
+    } else if (diag1x < diag2x) {
+      console.log('bottomLeft collision')
+    } else {
+      console.log('bottomRight collision')
+    }
+  }
+
+  // Check for left collision
+  if (
+    diag2x < diag1x &&
+    diag2x < diag2y &&
+    diag2x < diag1y
+  ) {
+    console.log('right collision')
+  }
+}
+
+// Delete this after checks
+if (collision !== 'none') {
+  console.log(collision)
+}
+
+if (
+  collCount > 1 && 
+  dimX > this.max / 2 && 
+  dimY > this.max / 2
+) {
+  // divide room by 2
+  // then check again
+  dimX = dimX / 2
+  dimY = dimY / 2 
+  this.checkIntersect(locX, locY, dimX, dimY)
+} else if (collCount > 1) {
+  // delete the room
+  collision = {
+    locX: 0,
+    locY: 0,
+    dimX: 0,
+    dimY: 0
+  }
+}
+
+switch (collision) {
+  case 'collides top':
+    let dist = (r2.y + r2.h) - r1.y
+    locY = locY + dist + this.doorSize
+    this.checkIntersect(locX, locY, dimX, dimY)
+    break
+
+  case 'collides right':
+    
+    break
+
+  case 'collides bottom':
+    
+    break
+
+  case 'collides left':
+    
+    break
+
+  default:
+    break
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Needs async logic
+// import { rand } from '../utils'
+// import Item from '../items'
+// import Enemies from '../enemies'
+
+// const mapSize = [1920, 1080] // 1920 x 1080 
+// // const mapSize = [20, 30]
+// let roomObj = {
+//   coll: 0,
+//   dimX: 0, 
+//   dimY: 0,
+//   doors: [],
+//   locX: 0, 
+//   locY: 0,
+//   id: 0,
+//   type: ''
+// }
+
+// export default class Map {
+//   constructor() {
+//     [ this.min , this.max ] = [ 120, 300 ]
+
+//     this.doors = []
+//     this.doorSize = 30
+//     this.item = new Item()
+//     this.items = []
+//     this.enemy = new Enemies()
+//     this.enemies = []
+//     this.hallway = []
+//     this.hallPad = 80
+//     this.limit = 500
+//     this.lvl = 1
+//     this.mapArr = []
+//     this.numOfRooms = 10
+//     this.placed = {
+//       boss: false,
+//       stairs: false,
+//       weapon: false
+//     }
+//     this.prevRoom = {
+//       loc: [],
+//       doorLoc: []
+//     }
+//     this.recurNum = 0
+//   }
+
+//   init() {
+//     this.createFirstRoom()
+//     this.createRooms()
+//   }
+
+//   // checkIntersect(a1,a2, b1,b2) {
+//   //   if (a1 < b2 && a2 > b1) {
+//   //     // calc how much the ranges intersect
+//   //     let dist1 = b2 - a1
+//   //     let dist2 = a2 - b1
+
+//   //     if (dist1 <= dist2) {
+//   //       // x shift up
+//   //       // y shift down
+//   //       return dist1
+//   //     } else {
+//   //       // x shift down
+//   //       // y shift up
+//   //       return dist2 * -1
+//   //     }
+//   //   } else {
+//   //     // no problems
+//   //     return 0
+//   //   }
+//   // }
+
+//   checkIntersect(room) {
+//     let collision = 'none'
+//     let collCounter = 0
+//     let dist = 0
+
+//     for (let i = 0; i < this.mapArr.length; i++) {
+//       const r1 = {
+//         x: room.locX,
+//         y: room.locY,
+//         w: room.dimX,
+//         h: room.dimY
+//       }
+
+//       const r2 = {
+//         x: this.mapArr[i].locX,
+//         y: this.mapArr[i].locY,
+//         w: this.mapArr[i].dimX,
+//         h: this.mapArr[i].dimY
+//       }
+
+//       const dx = (r1.x + r1.w / 2) - (r2.x + r2.w / 2)
+//       const dy = (r1.y + r1.h / 2) - (r2.y + r2.h / 2)
+//       const width = (r1.w + r2.w) / 2
+//       const height = (r1.h + r2.h) / 2
+//       const crossWidth = width * dy
+//       const crossHeight = height * dx
+
+//       if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
+//         console.log('Collision Detected!!!')
+//         if (crossWidth < crossHeight) {
+//           collCounter++
+//           collision = crossWidth > -crossHeight ? 'left' : 'bottom'
+//         } else {
+//           collCounter++
+//           collision = crossWidth > -crossHeight ? 'top' : 'right'
+//         }
+//       }
+
+//       // return collision dist as well as side
+//       switch (collision) {
+//         case 'top':
+//           dist = Math.abs((r2.y + r2.h) - r1.y + this.doorSize)
+//           console.log('collision top', dist)
+//           break
+
+//         case 'right':
+//           dist = Math.abs((r1.x + r1.w) - r2.x + this.doorSize)
+//           console.log('collision right', dist)
+//           break
+
+//         case 'bottom':
+//           dist = Math.abs((r1.y + r1.h) - r2.y + this.doorSize)
+//           console.log('collision bottom')
+//           break
+
+//         case 'left':
+//           console.log('col left col room',this.mapArr[i].id)
+//           dist = Math.abs((r2.x + r2.w) - r1.x + this.doorSize)
+//           console.log('collision left')
+//           break
+      
+//         default:
+//           break
+//       }
+//     }
+
+//     console.log('Collision Counter: ', collCounter)
+
+//     if (collCounter >= 2) {
+//       return {collision: 'delete', dist: 0}
+//     } else {
+//       console.log('dist', dist)
+//       return {collision: collision, dist: dist}
+//     }
+//   }
+
+//   checkWalls(room, dir) {
+//     let doors = []
+//     const [ locX, locY, dimX, dimY ] = [ room.locX, room.locY, room.dimX, room.dimY ]
+
+//     // Check: enough space for new room
+//     // Top
+//     if (locY - (this.hallPad + this.max) > 0 && dir !== 'top') {
+//       doors.push({
+//         coords: [
+//           rand(locX + this.doorSize, locX + dimX - this.doorSize),
+//           locY - this.doorSize
+//         ],
+//         dir: 'top',
+//         placed: false
+//       })
+//     }
+
+//     // Right
+//     if (locX + dimX + (this.hallPad + this.max) < mapSize[0] && dir !== 'right') {
+//       doors.push({
+//         coords: [
+//           locX + dimX,
+//           rand(locY + this.doorSize, locY + dimY - this.doorSize)
+//         ],
+//         dir: 'right',
+//         placed: false
+//       })
+//     }
+
+//     // Bottom
+//     if (locY + dimY + (this.hallPad + this.max) < mapSize[1] && dir !== 'bottom') {
+//       doors.push({
+//         coords: [
+//           rand(locX + this.doorSize, locX + dimX - this.doorSize),
+//           locY + dimY
+//         ],
+//         dir: 'bottom',
+//         placed: false
+//       })
+//     }
+
+//     // Left
+//     if (locX - (this.hallPad + this.max) > 0 && dir !== 'left') {
+//       doors.push({
+//         coords: [
+//           locX - this.doorSize,
+//           rand(locY + this.doorSize, locY + dimY - this.doorSize)
+//         ],
+//         dir: 'left',
+//         placed: false
+//       })
+//     }
+
+//     return doors
+//   }
+
+//   createFirstRoom() {
+//     let room = JSON.parse(JSON.stringify(roomObj))
+//     room.dimX = rand(this.min, this.max)
+//     room.dimY = rand(this.min, this.max)
+//     room.locX = rand(this.max, mapSize[0]-this.max)
+//     room.locY = rand(this.max, mapSize[1]-this.max)
+//     room.type = 'start'
+
+//     room.doors = this.checkWalls(room)
+
+//     this.mapArr.push(room)
+//   }
+
+//   createRoom(doorIndex, prevDoor) {
+//     let room = JSON.parse(JSON.stringify(roomObj))
+//     let obj = {}
+//     let col = ''
+//     let dist = 0
+
+//     room.dimX = rand(this.min, this.max)
+//     room.dimY = rand(this.min, this.max)
+
+//     room.id = this.mapArr.length
+
+//     switch (prevDoor.dir) {
+//       case 'top':
+//         room.locX = rand(
+//           prevDoor.coords[0] - room.dimX + this.doorSize,
+//           prevDoor.coords[0]
+//         )
+//         room.locY = prevDoor.coords[1] - room.dimY
+
+//         console.log('Room Top', room.id)
+//         obj = this.checkIntersect(room)
+//         col = obj.collision
+//         dist = obj.dist
+
+//         if (col === 'delete' && dist === 0) {
+//           prevDoor.coords = [undefined, undefined]
+//           break
+//         }
+
+//         if (dist > 0) {
+//           room = this.moveRoom(doorIndex, room, prevDoor.dir, col, dist)
+//         }
+
+//         room.doors = this.checkWalls(room, 'bottom')
+
+//         this.mapArr.push(room)
+//         this.createRooms()
+//         break
+
+//       case 'right':
+//         room.locX = prevDoor.coords[0] + this.doorSize
+//         room.locY = rand(
+//           prevDoor.coords[1] - room.dimY + this.doorSize,
+//           prevDoor.coords[1]
+//         )
+
+//         console.log('Room Right', room.id)
+//         obj = this.checkIntersect(room)
+//         col = obj.collision
+//         dist = obj.dist
+
+//         if (col === 'delete' && dist === 0) {
+//           prevDoor.coords = [undefined, undefined]
+//           break
+//         }
+        
+//         if (dist > 0) {
+//           room = this.moveRoom(doorIndex, room, prevDoor.dir, col, dist)
+//         }
+
+//         room.doors = this.checkWalls(room, 'left')
+//         this.mapArr.push(room)
+//         // this.createRooms()
+//         break
+
+//       // case 'bottom':
+//       //   room.locX = rand(
+//       //     prevDoor.coords[0] + room.dimX + this.doorSize,
+//       //     prevDoor.coords[0]
+//       //   )
+//       //   room.locY = prevDoor.coords[1] - room.dimY
+
+//       //   console.log('Room Bottom', room.id)
+//       //   obj = this.checkIntersect(room)
+//       //   col = obj.collision
+//       //   dist = obj.dist
+
+//       //   if (col === 'delete' && dist === 0) {
+//       //     prevDoor.coords = [undefined, undefined]
+//       //     return
+//       //   }
+        
+//       //   if (dist > 0) {
+//       //     console.log('door index', doorIndex)
+//       //     console.log(prevDoor)
+//       //     room = this.moveRoom(doorIndex, room, col, dist)
+//       //   }
+
+//       //   console.log('Room Bottom Obj')
+//       //   console.log(room)
+
+//       //   room.doors = this.checkWalls(room, 'top')
+//       //   this.mapArr.push(room)
+//       //   // this.createRooms()
+//       //   break
+
+//       // case 'left':
+//       //   room.locX = prevDoor.coords[0] - this.doorSize
+//       //   room.locY = rand(
+//       //     prevDoor.coords[1] - room.dimY + this.doorSize,
+//       //     prevDoor.coords[1]
+//       //   )
+
+//       //   console.log(room.id)
+//       //   console.log('Room Left')
+//       //   room.doors = this.checkWalls(room.locX, room.locY, room.dimX, room.dimY, 'right')
+//       //   this.checkIntersect(room.locX, room.locY, room.dimX, room.dimY)
+//       //   this.mapArr.push(room)
+//       //   // this.createRooms()
+//       //   break
+    
+//       default:
+//         break
+//     }
+
+//     // this.mapArr.push(room)
+//     // this.createRooms()
+//   }
+
+//   createRooms() {
+//     let prevRoom = this.mapArr[this.mapArr.length - 1]
+
+//     for (let i = 0; i < prevRoom.doors.length; i++) {
+//       this.createRoom(i, prevRoom.doors[i])
+//     }
+//   }
+
+//   moveRoom(doorIndex, room, dorDir, dir, dist) {
+//     console.log('Started the moveRoom')
+
+//     let prevRoom = this.mapArr[room.id - 1]
+//     let door = prevRoom.doors[doorIndex]
+
+//     if (door === undefined) {
+//       room.locX = undefined
+//       room.locY = undefined
+//     }
+
+//     console.log('door index', doorIndex)
+//     console.log(prevRoom.doors)
+
+//     switch (dir) {
+//       case 'top':
+//         switch (dorDir) {
+//           // case 'top':            
+//           //   console.log('door top')
+//           //   break
+    
+//           case 'right':
+//             // dist = (r1.x + r1.w) - r2.x + this.doorSize
+//             door.locY = door.locY - dist
+//             room.dimY = room.dimY - dist
+//             room.locY = room.locY + dist
+//             console.log('door right')
+//             break
+    
+//           case 'bottom':
+//             // dist = r2.y - r1.y + this.doorSize
+//             console.log('door bottom')
+//             break
+    
+//           case 'left':
+//             // dist = r1.x - r2.x + this.doorSize
+//             console.log('door left')
+//             break
+        
+//           default:
+//             break
+//         }
+
+//         console.log('collision top', dist)
+//         break
+
+//       case 'right':
+//         switch (dorDir) {
+//           // case 'top':            
+//           //   console.log('door top')
+//           //   break
+    
+//           case 'right':
+//             room.dimY = room.dimY - dist
+//             room.locY = room.locY + dist
+//             console.log('door right')
+//             break
+    
+//           case 'bottom':
+//             console.log('door bottom')
+//             break
+    
+//           case 'left':
+//             console.log('door left')
+//             break
+        
+//           default:
+//             break
+//         }
+
+//         console.log('collision right', dist)
+//         break
+
+//       case 'bottom':
+//         switch (dorDir) {
+//           // case 'top':            
+//           //   console.log('door top')
+//           //   break
+    
+//           case 'right':
+//             // room.dimY = room.dimY - dist
+            
+//             console.log('door right')
+//             break
+    
+//           case 'bottom':
+//             console.log('door bottom')
+//             break
+    
+//           case 'left':
+//             console.log('door left')
+//             break
+        
+//           default:
+//             break
+//         }
+
+//         console.log('collision bottom')
+//         break
+
+//       case 'left':
+//         switch (dorDir) {
+//           // case 'top':            
+//           //   console.log('door top')
+//           //   break
+    
+//           case 'right':
+//             door.dimX = door.dimX + dist
+//             room.locX = room.locX + dist
+//             console.log('door right')
+//             break
+    
+//           case 'bottom':
+//             console.log('door bottom')
+//             break
+    
+//           case 'left':
+//             console.log('door left')
+//             break
+        
+//           default:
+//             break
+//         }
+
+//         console.log('collision left')
+//         break
+    
+//       default:
+//         break
+//     }
+
+//     return room
+//   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//   randomSquares() {
+//     for (let i = 0; i < this.mapArr.length; i++) {
+//       let random = rand(0, 100)
+//       if (random < 20 || random > 80) {
+//         let enemy = this.enemy.createEnemies(this.lvl)
+
+//         enemy.locX = rand(
+//           this.mapArr[i].locX + 20, 
+//           this.mapArr[i].locX + this.mapArr[i].dimX - 20
+//         )
+//         enemy.locY = rand(
+//           this.mapArr[i].locY + 20, 
+//           this.mapArr[i].locY + this.mapArr[i].dimY - 20
+//         )
+
+//         this.enemies.push(enemy)
+
+//       } else if ((random > 20 && random < 35) || (random < 80 && random > 65)) {
+//         let health = this.item.createHealth()
+
+//         health.locX = rand(
+//           this.mapArr[i].locX + 20, 
+//           this.mapArr[i].locX + this.mapArr[i].dimX - 20
+//         )
+//         health.locY = rand(
+//           this.mapArr[i].locY + 20, 
+//           this.mapArr[i].locY + this.mapArr[i].dimY - 20
+//         )
+
+//         this.items.push(health)
+
+//       } else if (
+//         !this.placed.weapon && 
+//         ((random > 40 && random < 60) || i === this.numOfRooms-1)
+//       ) {
+//         let weapon = this.item.createWeapon(this.lvl)
+
+//         weapon.locX = rand(
+//           this.mapArr[i].locX + 20, 
+//           this.mapArr[i].locX + this.mapArr[i].dimX - 20
+//         )
+//         weapon.locY = rand(
+//           this.mapArr[i].locY + 20, 
+//           this.mapArr[i].locY + this.mapArr[i].dimY - 20
+//         )
+
+//         this.items.push(weapon)
+//         this.placed.weapon = true
+//       }
+//     }
+//   }
+
+//   createDoors() {
+
+//   }
+
+//   createHalls() {
+
+//   }
+
+//   everything() {
+//     // this.enemies //? 
+//     return {
+//       items: this.items,
+//       enemies: this.enemies,
+//       hallways: this.hallway,
+//       rooms: this.mapArr
+//     }
+//   }
+// }
+

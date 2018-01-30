@@ -85,28 +85,81 @@ export default class Entities {
     canvas = document.getElementById('tmp')
     let ctx = canvas.getContext('2d')
 
-    canvas.width = size[0]
-    canvas.height = size[1]
+    canvas.width = size[0] + 500
+    canvas.height = size[1] + 500
 
     entityRect(ctx, 0, 0, canvas.width, canvas.height, 'black')
 
-    for (let i = 0; i < all.rooms.length; i++) {
+    all.rooms.forEach((v, k) => {
       entityRect(
         ctx, 
-        all.rooms[i].locX, all.rooms[i].locY, 
-        all.rooms[i].dimX, all.rooms[i].dimY,
+        v.locX, v.locY, 
+        v.dimX, v.dimY,
         'grey'
       )
 
-      for (let j = 0; j < all.rooms[i].doors.length; j++) {
-        entityRect(
-          ctx,
-          all.rooms[i].doors[j].coords[0], all.rooms[i].doors[j].coords[1], 
-          20,20,
-          'yellow'
-        )
-      }
-    }
+      ctx.fillStyle = 'white' 
+      ctx.font = '14px serif'
+      ctx.fillText(
+        v.id,
+        v.locX + 5,
+        v.locY + 15
+      )
+      
+      v.doors.forEach((i, j) => {
+        if (i != undefined || i != null) {
+          entityRect(
+            ctx,
+            i.coords[0], i.coords[1], 
+            i.doorSize[0], i.doorSize[1],
+            'yellow'
+          )
+        }
+      })
+    })
+    // for (let i = 0; i < all.rooms.length; i++) {
+    //   entityRect(
+    //     ctx, 
+    //     all.rooms[i].locX, all.rooms[i].locY, 
+    //     all.rooms[i].dimX, all.rooms[i].dimY,
+    //     'grey'
+    //   )
+
+    //   ctx.fillStyle = 'white' 
+    //   ctx.font = '14px serif'
+    //   ctx.fillText(
+    //     all.rooms[i].id,
+    //     all.rooms[i].locX + 5,
+    //     all.rooms[i].locY + 15
+    //   )
+
+    //   for (let j = 0; j < all.rooms[i].doors.length; j++) {
+    //     entityRect(
+    //       ctx,
+    //       all.rooms[i].doors[j].coords[0], all.rooms[i].doors[j].coords[1], 
+    //       30,30,
+    //       'yellow'
+    //     )
+    //   }
+    // }
+
+    all.enemies.forEach((v, k) => {
+      entityRect(
+        ctx, 
+        v.locX, v.locY, 
+        15, 15,
+        v.color
+      )
+    })
+
+    all.items.forEach((v, k) => {
+      entityRect(
+        ctx, 
+        v.locX, v.locY, 
+        15, 15,
+        v.color
+      )
+    })
 
     // for (let i = 0; i < all.enemies.length; i++) {
     //   entityRect(
@@ -173,7 +226,7 @@ export default class Entities {
     entityCirc(ctx, x/2,y/2, 100, '')
 
     let data = canvas.toDataURL('image/png')
-    // document.body.removeChild(canvas)
+    document.body.removeChild(canvas)
 
     return data
   }

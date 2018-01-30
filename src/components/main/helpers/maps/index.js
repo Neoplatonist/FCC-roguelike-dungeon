@@ -2,16 +2,16 @@ import { rand } from '../utils'
 import Item from '../items'
 import Enemies from '../enemies'
 
-const mapSize = [1920, 1080] // 1920 x 1080 
+const mapSize = [1920, 1080]
 // const mapSize = [20, 30]
 let roomObj = {
+  coll: 0,
   dimX: 0, 
   dimY: 0,
   doors: [],
   locX: 0, 
   locY: 0,
-  id: 0,
-  type: ''
+  id: 0
 }
 
 export default class Map {
@@ -19,13 +19,12 @@ export default class Map {
     [ this.min , this.max ] = [ 120, 300 ]
 
     this.doors = []
-    this.doorSize = 20
+    this.doorSize = [30, 30]
     this.item = new Item()
     this.items = []
     this.enemy = new Enemies()
     this.enemies = []
-    this.hallway = []
-    this.hallPad = 80
+    // this.hallPad = 80
     this.limit = 500
     this.lvl = 1
     this.mapArr = []
@@ -45,213 +44,550 @@ export default class Map {
   init() {
     this.createFirstRoom()
     this.createRooms()
+    // this.randomSquares()
+
+    console.log(this.mapArr)
+  }
+
+  genCollision = {
+    'none': (v, room) => 0,
+    'top': (v, room) => {
+      console.log('Collision top')
+      return Math.abs((v.locY + v.dimY) - room.locY + this.doorSize[1])
+    },
+    'right': (v, room) => {
+      console.log('Collision right')
+      return Math.abs((room.locX + room.dimX) - v.locX + this.doorSize[0])
+    },
+    'bottom': (v, room) => {
+      console.log('Collision bottom')
+      return Math.abs((room.locY + room.dimY) - v.locY + this.doorSize[1])
+    },
+    'left': (v, room) => {
+      console.log('Collision left')
+      return Math.abs((v.locX + v.dimX) - room.locX + this.doorSize[0])
+    }
+  }
+
+  genDoor = {
+    'top': (room) => {
+      return {
+        coords: [
+          rand(room.locX + this.doorSize[0], room.locX + room.dimX - this.doorSize[0]),
+          room.locY - this.doorSize[1]
+        ],
+        dir: 'top',
+        doorSize: [this.doorSize[0], this.doorSize[1]]
+      }
+    },
+    'right': (room) => {
+      return {
+        coords: [
+          room.locX + room.dimX,
+          rand(
+            room.locY + this.doorSize[1], 
+            room.locY + room.dimY - this.doorSize[1]
+          )
+        ],
+        dir: 'right',
+        doorSize: [this.doorSize[0], this.doorSize[1]]
+      }
+    },
+    'bottom': (room) => {
+      return {
+        coords: [
+          rand(
+            room.locX + this.doorSize[0], 
+            room.locX + room.dimX - this.doorSize[1]
+          ),
+          room.locY + room.dimY
+        ],
+        dir: 'bottom',
+        doorSize: [this.doorSize[0], this.doorSize[1]]
+      }
+    },
+    'left': (room) => {
+      return {
+        coords: [
+          room.locX - this.doorSize[0],
+          rand(
+            room.locY + this.doorSize, 
+            room.locY + room.dimY - this.doorSize[1]
+          )
+        ],
+        dir: 'left',
+        doorSize: [this.doorSize[0], this.doorSize[1]]
+      }
+    }
+  }
+
+  genRoom = {
+    'top': (roomIndex, doorIndex, prevDoor, room) => {
+      console.log('Room Top:', room.id)
+      room.locX = rand(
+        prevDoor.coords[0] - room.dimX + prevDoor.doorSize[0],
+        prevDoor.coords[0]
+      )
+      room.locY = prevDoor.coords[1] - room.dimY
+
+      let { rom, collision, dist } = this.checkIntersect(room)
+
+      console.log('id:',rom.id)
+
+      if (collision === 'delete' && dist === 0) {
+        console.log('deleted room')
+        // probably need to push this into a new function 
+        // and call lower in the chain to prevent premature
+        // deletion of the doors in prev object.
+        // prevDoor = undefined
+        rom = undefined
+        this.mapArr[roomIndex].doors[doorIndex] = undefined
+      } else if (dist > 0 && (rom != null || rom != undefined)) {
+        console.log('key', doorIndex)
+        rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
+        console.log('moveRoom genRoom obj', rom)
+      }
+
+      // if (rom != undefined || rom != null) {
+      //   rom.doors = this.createDoors(rom, this.genDoorInv[prevDoor.dir]())
+      //   console.log(room)
+      //   this.mapArr.push(rom)
+      //   this.createRooms()
+      // }
+
+      // room.doors = this.createDoors(room, 'bottom')
+
+      // this.mapArr.push(room)
+      // this.createRooms()
+
+      return rom
+    },
+
+    'right': (roomIndex, doorIndex, prevDoor, room) => {
+      console.log('Room Right', room.id)
+      room.locX = prevDoor.coords[0] + prevDoor.doorSize[0]
+      room.locY = rand(
+        prevDoor.coords[1] - room.dimY + prevDoor.doorSize[1],
+        prevDoor.coords[1]
+      )
+
+      let { rom, collision, dist } = this.checkIntersect(room)
+
+      console.log('id:',rom.id)
+      
+      if (collision === 'delete' && dist === 0) {
+        console.log('deleted room')
+        // probably need to push this into a new function 
+        // and call lower in the chain to prevent premature
+        // deletion of the doors in prev object.
+
+        // prevDoor = undefined 
+        this.mapArr[roomIndex].doors[doorIndex] = undefined
+        rom = undefined
+      } else if (dist > 0 && (rom != null || rom != undefined)) {
+        console.log('door key', doorIndex)
+        console.log('genRoom right obj before move', rom)
+        rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
+      }
+
+      // if (rom != undefined || rom != null) {
+      //   rom.doors = this.createDoors(rom, this.genDoorInv[prevDoor.dir]())
+      //   console.log(room)
+      //   this.mapArr.push(rom)
+      //   // this.createRooms()
+      // }
+
+      // room.doors = this.createDoors(room, 'left')
+
+      // this.mapArr.push(room)
+      // this.createRooms()
+
+      return rom
+    },
+
+    'bottom': (roomIndex, doorIndex, prevDoor, room) => {
+      console.log('Room Bottom', room.id)
+      // room.locX = rand(
+      //     prevDoor.coords[0] + room.dimX + prevDoor.doorSize,
+      //     prevDoor.coords[0]
+      //   )
+      //   room.locY = prevDoor.coords[1] - room.dimY
+
+      // let { rom, collision, dist } = this.checkIntersect(room)
+
+      // console.log('id:',rom.id)
+      
+      // if (collision === 'delete' && dist === 0) {
+      //   console.log('deleted room')
+      //   // probably need to push this into a new function 
+      //   // and call lower in the chain to prevent premature
+      //   // deletion of the doors in prev object.
+
+      //   // prevDoor = undefined 
+      //   this.mapArr[roomIndex].doors[doorIndex] = undefined
+      //   rom = undefined
+      // } else if (dist > 0 && (rom != null || rom != undefined)) {
+      //   console.log('door key', doorIndex)
+      //   console.log('genRoom right obj before move', rom)
+      //   rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
+      // }
+
+      // // if (rom != undefined || rom != null) {
+      // //   rom.doors = this.createDoors(rom, this.genDoorInv[prevDoor.dir]())
+      // //   console.log(room)
+      // //   this.mapArr.push(rom)
+      // //   // this.createRooms()
+      // // }
+
+      // // room.doors = this.createDoors(room, 'left')
+
+      // // this.mapArr.push(room)
+      // // this.createRooms()
+
+      // return rom
+      return undefined
+    },
+
+    'left': (i, prevDoor, room) => {
+      console.log('attempted to create left door')
+      //   room.locX = prevDoor.coords[0] - this.doorSize
+      //   room.locY = rand(
+      //     prevDoor.coords[1] - room.dimY + this.doorSize,
+      //     prevDoor.coords[1]
+      //   )
+
+      //   console.log(room.id)
+      //   console.log('Room Left')
+      //   room.doors = this.checkWalls(room.locX, room.locY, room.dimX, room.dimY, 'right')
+      //   this.checkIntersect(room.locX, room.locY, room.dimX, room.dimY)
+      //   this.mapArr.push(room)
+      //   // this.createRooms()
+      // return room
+      return undefined
+    }
+  }
+
+  genCollTop = {
+    'top': (dist, door, room) => {
+      console.log('top door top')
+      room.locY = room.locY + dist
+      return {door, room}
+    },
+    'right': (dist, door, room) => {
+      console.log(dist)
+      door.locY = door.locY - dist
+      room.dimY = room.dimY - dist
+      room.locY = room.locY + dist
+      console.log('top door right')
+      return {door, room}
+    },
+    'bottom': (dist, door, room) => {
+      console.log('top door bottom')
+      return {door, room}
+    },
+    'left': (dist, door, room) => {
+      console.log('top door left')
+      return {door, room}
+    }
+  }
+
+  genCollRight = {
+    'top': (dist, door, room) => {
+      console.log('right door top')
+      return {door, room}
+    },
+    'right': (dist, door, room) => {
+      console.log('right door right')
+      return {door, room}
+    },
+    'bottom': (dist, door, room) => {
+      console.log('right door bottom')
+      return {door, room}
+    },
+    'left': (dist, door, room) => {
+      console.log('right door left')
+      return {door, room}
+    }
+  }
+
+  genCollBottom = {
+    'top': (dist, door, room) => {
+      console.log('bottom door top')
+      room.dimY = room.dimY - dist
+      door.coords[1] = door.coords[1] - dist
+      door.doorSize[1] = door.doorSize[1] + dist
+      return {door, room}
+    },
+    'right': (dist, door, room) => {
+      console.log('bottom door right')
+      room.dimY = room.dimY - dist
+      return {door, room}
+    },
+    'bottom': (dist, door, room) => {
+      console.log('bottom door bottom')
+      return {door, room}
+    },
+    'left': (dist, door, room) => {
+      console.log('bottom door left')
+      return {door, room}
+    }
+  }
+
+  genCollLeft = {
+    'top': (dist, door, room) => {
+      console.log('left door top')
+      room.locX = room.locX + dist
+      room.dimX = room.dimX - dist
+      return {door, room}
+    },
+    'right': (dist, door, room) => {
+      console.log('left door right')
+      room.locX = room.locX + dist
+      door.doorSize[0] = door.doorSize[0] + dist
+      return {door, room}
+    },
+    'bottom': (dist, door, room) => {
+      console.log('left door bottom')
+      return {door, room}
+    },
+    'left': (dist, door, room) => {
+      console.log('left door left')
+      return {door, room}
+    }
+  }
+
+  genCollDir = {
+    'top': (dir, dist, door, room) => this.genCollTop[dir](dist, door, room),
+    'right': (dir, dist, door, room) => this.genCollRight[dir](dist, door, room),
+    'bottom': (dir, dist, door, room) => this.genCollBottom[dir](dist, door, room),
+    'left': (dir, dist, door, room) => this.genCollLeft[dir](dist, door, room)
+  }
+
+  checkIntersect(room) {
+    console.log('checking intersect')
+    let collision = 'none'
+    let dist = 0
+
+    this.mapArr.forEach((v,k) => {
+      if (v.id !== room.id) {
+        const dx = (room.locX + room.dimX / 2) - (v.locX + v.dimX / 2)
+        const dy = (room.locY + room.dimY / 2) - (v.locY + v.dimY / 2)
+        const width = (room.dimX + v.dimX) / 2
+        const height = (room.dimY + v.dimY) / 2
+        const crossWidth = width * dy
+        const crossHeight = height * dx
+
+        if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
+          console.log('Collision Detected!!!')
+          room.coll++
+          if (crossWidth < crossHeight) {
+            collision = crossWidth > -crossHeight ? 'left' : 'bottom'
+          } else {
+            collision = crossWidth > -crossHeight ? 'top' : 'right'
+          }
+
+          console.log('calc dist')
+          dist = this.genCollision[collision](v, room)
+
+          // Delete after debugging
+          if (dist > 0) {
+            console.log('Dist:', dist)
+          }
+        }
+      }
+    })
+
+    if (room.coll > 1) {
+      console.log('Collision Counter1: ', room.coll)
+      return {rom: room, collision: 'delete', dist: 0}
+    } else {
+      console.log('Collision Counter2: ', room.coll)
+      return {rom: room, collision, dist}
+    }
+  }
+
+  createDoors(room, dir) {
+    console.log('createDoors')
+    let doors = []
+
+    // Check: enough space for new room
+    // Top
+    if (
+      room.locY - (this.doorSize[1] + this.max) > 0 && 
+      dir !== 'top'
+    ) {
+      const r = rand(0, 100)
+      
+      if (r < 40 || r > 60 || room.type === 'start') {
+        doors.push(this.genDoor['top'](room))
+      }
+    }
+
+    // Right
+    if (
+      room.locX + room.dimX + (this.doorSize[0] + this.max) < mapSize[0] && 
+      dir !== 'right'
+    ) {
+      const r = rand(0, 100)
+
+      if (r < 40 || r > 60 || room.type === 'start') {
+        doors.push(this.genDoor['right'](room))
+      }
+    }
+
+    // Bottom
+    if (
+      room.locY + room.dimY + (this.doorSize[1] + this.max) < mapSize[1] && 
+      dir !== 'bottom'
+    ) {
+      const r = rand(0, 100)
+
+      if (r < 40 || r > 60 || room.type === 'start') {
+        doors.push(this.genDoor['bottom'](room))
+      }
+    }
+
+    // Left
+    if (
+      room.locX - (this.doorSize[0] + this.max) > 0 && 
+      dir !== 'left'
+    ) {
+      const r = rand(0, 100)
+
+      if (r < 40 || r > 60 || room.type === 'start') {
+        doors.push(this.genDoor['left'](room))
+      }
+    }
+
+    return doors
   }
 
   createFirstRoom() {
-    let room = JSON.parse(JSON.stringify(roomObj))
+    let room = Object.assign({}, roomObj)
+
     room.dimX = rand(this.min, this.max)
     room.dimY = rand(this.min, this.max)
     room.locX = rand(this.max, mapSize[0]-this.max)
     room.locY = rand(this.max, mapSize[1]-this.max)
-    room.type = 'start'
+    room.id = 0
 
-    // Check: enough space for new room
-    // Top
-    if (room.locY - (this.hallPad + this.max) > 0) {
-      room.doors.push({
-        coords: [
-          rand(room.locX + this.doorSize, room.locX + room.dimX - this.doorSize),
-          room.locY - this.doorSize
-        ],
-        dir: 'top',
-        placed: false
-      })
-    }
-
-    // Right
-    if (room.locX + room.dimX + (this.hallPad + this.max) < mapSize[0]) {
-      room.doors.push({
-        coords: [
-          room.locX + room.dimX,
-          rand(room.locY + this.doorSize, room.locY + room.dimY - this.doorSize)
-        ],
-        dir: 'right',
-        placed: false
-      })
-    }
-
-    // Bottom
-    if (room.locY + room.dimY + (this.hallPad + this.max) < mapSize[1]) {
-      room.doors.push({
-        coords: [
-          rand(room.locX + this.doorSize, room.locX + room.dimX - this.doorSize),
-          room.locY + room.dimY
-        ],
-        dir: 'bottom',
-        placed: false
-      })
-    }
-
-    // Left
-    if (room.locX - (this.hallPad + this.max) > 0) {
-      console.log('left')
-      room.doors.push({
-        coords: [
-          room.locX - this.doorSize,
-          rand(room.locY + this.doorSize, room.locY + room.dimY - this.doorSize)
-        ],
-        dir: 'left',
-        placed: false
-      })
-    }
+    room.doors = this.createDoors(room)
 
     this.mapArr.push(room)
   }
 
-  createRoom(prevDoor) {
-    let curRoom = JSON.parse(JSON.stringify(roomObj))
-
-    curRoom.dimX = 0
-    curRoom.dimY = 0
-    curRoom.locX = 0
-    curRoom.locY = 0
+  genDoorInv = {
+    'top': () => 'bottom',
+    'right': () => 'left',
+    'bottom': () => 'top',
+    'left': () => 'right'
   }
 
-  createRooms() {
-    let prevRoom = this.mapArr[this.mapArr.length - 1]
+  createRoom(roomIndex, doorIndex, prevDoor) {
+    if (prevDoor.dir !== 'left' || prevDoor.dir !== 'bottom') {
+      console.log('createRoom', prevDoor.dir)
+      let room = Object.assign({}, roomObj)
 
-    for (let i = 0; i < prevRoom.doors.length; i++) {
-      this.createRoom(prevRoom.doors[i])
+      room.dimX = rand(this.min, this.max)
+      room.dimY = rand(this.min, this.max)
+      room.id = this.mapArr.length
+
+      console.log('key', doorIndex)
+      room = this.genRoom[prevDoor.dir](roomIndex, doorIndex, prevDoor, room)
+
+      console.log('createRoom obj before doors', room)
+
+      if (room != undefined || room != null) {
+        room.doors = this.createDoors(room, this.genDoorInv[prevDoor.dir]())
+        console.log('createRoom obj before mapArr', room)
+        this.mapArr.push(room)
+        this.createRooms()
+      }
     }
   }
 
-  
+  createRooms() {
+    console.log('createRooms')
+    let roomIndex = this.mapArr.length - 1
+    let prevRoom = this.mapArr[roomIndex]
+    if (prevRoom.doors.length > 0) {
+      prevRoom.doors.forEach((v, k) => this.createRoom(roomIndex, k, v))
+    }
+  }
 
+  moveRoom(roomIndex, doorIndex, room, dorDir, dir, dist) {
+    console.log('Started the moveRoom')
 
+    let door = this.mapArr[roomIndex].doors[doorIndex]
+    console.log('door', door)
+    // let door = prevRoom.doors[doorIndex]
+    // console.log('door:', door)
 
+    if (door === undefined || door === null) {
+      return room = undefined
+    }
 
+    console.log('door index', doorIndex)
 
+    let {prevDoor, rom} = this.genCollDir[dir](dorDir, dist, door, room)
+    console.log('moveRoom obj', rom)
 
+    this.mapArr[roomIndex].doors[doorIndex] = prevDoor
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return rom
+  }
 
   randomSquares() {
-    for (let i = 0; i < this.mapArr.length; i++) {
+    this.mapArr.forEach((v, k) => {
       let random = rand(0, 100)
+
       if (random < 20 || random > 80) {
         let enemy = this.enemy.createEnemies(this.lvl)
 
         enemy.locX = rand(
-          this.mapArr[i].locX + 20, 
-          this.mapArr[i].locX + this.mapArr[i].dimX - 20
+          v.locX + 20, 
+          v.locX + v.dimX - 20
         )
         enemy.locY = rand(
-          this.mapArr[i].locY + 20, 
-          this.mapArr[i].locY + this.mapArr[i].dimY - 20
+          v.locY + 20, 
+          v.locY + v.dimY - 20
         )
 
         this.enemies.push(enemy)
 
-      } else if ((random > 20 && random < 35) || (random < 80 && random > 65)) {
+      } else if ((random > 20 && random < 40) || (random < 80 && random > 65)) {
         let health = this.item.createHealth()
 
         health.locX = rand(
-          this.mapArr[i].locX + 20, 
-          this.mapArr[i].locX + this.mapArr[i].dimX - 20
+          v.locX + 20, 
+          v.locX + v.dimX - 20
         )
         health.locY = rand(
-          this.mapArr[i].locY + 20, 
-          this.mapArr[i].locY + this.mapArr[i].dimY - 20
+          v.locY + 20, 
+          v.locY + v.dimY - 20
         )
 
         this.items.push(health)
 
       } else if (
         !this.placed.weapon && 
-        ((random > 40 && random < 60) || i === this.numOfRooms-1)
+        ((random > 40 && random < 60) || k === this.numOfRooms-1)
       ) {
         let weapon = this.item.createWeapon(this.lvl)
 
         weapon.locX = rand(
-          this.mapArr[i].locX + 20, 
-          this.mapArr[i].locX + this.mapArr[i].dimX - 20
+          v.locX + 20, 
+          v.locX + v.dimX - 20
         )
         weapon.locY = rand(
-          this.mapArr[i].locY + 20, 
-          this.mapArr[i].locY + this.mapArr[i].dimY - 20
+          v.locY + 20, 
+          v.locY + v.dimY - 20
         )
 
         this.items.push(weapon)
         this.placed.weapon = true
       }
-    }
-  }
-  
-  checkIntersect(a1,a2, b1,b2) {
-    if (a1 < b2 && a2 > b1) {
-      // calc how much the ranges intersect
-      let dist1 = b2 - a1
-      let dist2 = a2 - b1
-
-      if (dist1 <= dist2) {
-        // x shift up
-        // y shift down
-        return dist1
-      } else {
-        // x shift down
-        // y shift up
-        return dist2 *-1
-      }
-    } else {
-      // no problems
-      return 0
-    }
-  }
-
-  createDoors() {
-
-  }
-
-  createHalls() {
-
+    })
   }
 
   everything() {
@@ -259,9 +595,126 @@ export default class Map {
     return {
       items: this.items,
       enemies: this.enemies,
-      hallways: this.hallway,
       rooms: this.mapArr
     }
   }
 }
 
+// switch (dir) {
+    //   case 'top':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         // dist = (room.locX + room.dimX) - r2.x + this.doorSize
+    //         door.locY = door.locY - dist
+    //         room.dimY = room.dimY - dist
+    //         room.locY = room.locY + dist
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         // dist = r2.y - r1.y + this.doorSize
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         // dist = room.locX - r2.x + this.doorSize
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision top', dist)
+    //     break
+
+    //   case 'right':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         room.dimY = room.dimY - dist
+    //         room.locY = room.locY + dist
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision right', dist)
+    //     break
+
+    //   case 'bottom':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         // room.dimY = room.dimY - dist
+            
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision bottom')
+    //     break
+
+    //   case 'left':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         door.dimX = door.dimX + dist
+    //         room.locX = room.locX + dist
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision left')
+    //     break
+    
+    //   default:
+    //     break
+    // }
+
+    // return room

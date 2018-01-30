@@ -9,6 +9,10 @@
 # production
 /build
 
+# debugging
+/.vscode
+/remote-profile
+
 # misc
 .DS_Store
 .env.local
