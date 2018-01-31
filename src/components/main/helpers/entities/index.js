@@ -95,7 +95,7 @@ export default class Entities {
         ctx, 
         v.locX, v.locY, 
         v.dimX, v.dimY,
-        'grey'
+        'white'
       )
 
       ctx.fillStyle = 'white' 
@@ -112,7 +112,7 @@ export default class Entities {
             ctx,
             i.coords[0], i.coords[1], 
             i.doorSize[0], i.doorSize[1],
-            'yellow'
+            'white'
           )
         }
       })
@@ -161,23 +161,23 @@ export default class Entities {
       )
     })
 
-    // for (let i = 0; i < all.enemies.length; i++) {
-    //   entityRect(
-    //     ctx, 
-    //     all.enemies[i].locX, all.enemies[i].locY, 
-    //     15, 15,
-    //     all.enemies[i].color
-    //   )
-    // }
+    for (let i = 0; i < all.enemies.length; i++) {
+      entityRect(
+        ctx, 
+        all.enemies[i].locX, all.enemies[i].locY, 
+        15, 15,
+        all.enemies[i].color
+      )
+    }
 
-    // for (let i = 0; i < all.items.length; i++) {
-    //   entityRect(
-    //     ctx, 
-    //     all.items[i].locX, all.items[i].locY, 
-    //     15, 15,
-    //     all.items[i].color
-    //   )
-    // }
+    for (let i = 0; i < all.items.length; i++) {
+      entityRect(
+        ctx, 
+        all.items[i].locX, all.items[i].locY, 
+        15, 15,
+        all.items[i].color
+      )
+    }
 
     // for (let i = 0; i < 1; i++) {
     //   entityRect(
@@ -223,7 +223,7 @@ export default class Entities {
 
     // shape
     ctx.globalCompositeOperation = 'xor'
-    entityCirc(ctx, x/2,y/2, 100, '')
+    entityCirc(ctx, x/2,y/2, 80, '')
 
     let data = canvas.toDataURL('image/png')
     document.body.removeChild(canvas)

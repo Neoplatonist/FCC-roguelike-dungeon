@@ -88,9 +88,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      // if (checkBound(data)) {
+      if (checkBound(data)) {
         this.maps.loc[1] += this.speed
-      // }
+      }
     }
 
     if (this.move.down) {
@@ -100,9 +100,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      // if (checkBound(data)) {
+      if (checkBound(data)) {
         this.maps.loc[1] -= this.speed
-      // }
+      }
     }
 
     if (this.move.left) {
@@ -112,9 +112,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      // if (checkBound(data)) {
+      if (checkBound(data)) {
         this.maps.loc[0] += this.speed
-      // }
+      }
     }
 
     if (this.move.right) {
@@ -124,9 +124,9 @@ export default class Main extends Component {
         1,1
       ).data
 
-      // if (checkBound(data)) {
+      if (checkBound(data)) {
         this.maps.loc[0] -= this.speed
-      // }
+      }
     }
   }
 

@@ -14,6 +14,7 @@ export const entityCirc = function(context, x,y, radius, color) {
 }
 
 export const checkBound = function(data) {
+  // white = move
   if (
     data[0] === 255 &&
     data[1] === 255 &&
