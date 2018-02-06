@@ -1,5 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
+
 User Story: I have health, a level, and a weapon. I can pick up a better weapon. I can pick up health items.
 
 User Story: All the items and enemies on the map are arranged at random.
@@ -19,8 +20,12 @@ User Story: When I find and beat the boss, I win.
 User Story: The game should be challenging, but theoretically winnable.
 
 To start a dev environment:
-  yarn install
-  yarn start
+```
+yarn install
+yarn start
+```
 
 To build a production environment:
-  yarn build
+```
+yarn build
+```
