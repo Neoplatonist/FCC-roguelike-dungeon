@@ -6,25 +6,27 @@ const initEnemies = {
   health: 0,
   locX: 0,
   locY: 0,
-  name: 'enemy'
+  dims: 15,
+  name: 'enemy',
+  xp: 0
 }
 
 const enemiesList = [
   [],
   [
-    { name: 'cave bat', min: 3, max: 5 }
+    { name: 'cave bat',     dmgMin: 3,  dmgMax: 5,  xpMin: 10, xpMax: 25 }
   ],
   [
-    { name: 'buff rat', min: 6, max: 8 }
+    { name: 'buff rat',     dmgMin: 6,  dmgMax: 8,  xpMin: 30, xpMax: 65 }
   ],
   [
-    { name: 'hairless cat', min: 10, max: 13 }
+    { name: 'hairless cat', dmgMin: 10, dmgMax: 13, xpMin: 70, xpMax: 100 }
   ],
   [
-    { name: 'landshark', min: 15, max: 19 }
+    { name: 'landshark',    dmgMin: 15, dmgMax: 19, xpMin: 110, xpMax: 180 }
   ],
   [
-    { name: 'goboblin', min: 21, max: 26 }
+    { name: 'goboblin',     dmgMin: 21, dmgMax: 26, xpMin: 190, xpMax: 230 }
   ],
 ]
 
@@ -38,8 +40,12 @@ export default class Enemies {
 
     enemy.name = enemiesList[level][0].name
     enemy.damage = rand(
-      enemiesList[level][0].min,
-      enemiesList[level][0].max
+      enemiesList[level][0].dmgMin,
+      enemiesList[level][0].dmgMax
+    )
+    enemy.xp = rand(
+      enemiesList[level][0].xpMin,
+      enemiesList[level][0].xpMax
     )
     enemy.health = enemy.damage * this.multiplier
 
@@ -52,6 +58,9 @@ export default class Enemies {
     enemy.name = 'boss person'
     enemy.damage = rand(26, 30)
     enemy.health = enemy.damage * this.multiplier
+    enemy.dims = 30
+
+    console.log(enemy)
 
     return enemy //?
   }

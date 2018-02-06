@@ -827,132 +827,132 @@
 
 
 
-if (
-  locX < this.mapArr[i].locX + this.mapArr[i].dimX &&
-  locX + dimX > this.mapArr[i].locX &&
-  locY < this.mapArr[i].locY + this.mapArr[i].dimY &&
-  locY + dimY > this.mapArr[i].locY
-) {
-  console.log('Collision Detected!')
+// if (
+//   locX < this.mapArr[i].locX + this.mapArr[i].dimX &&
+//   locX + dimX > this.mapArr[i].locX &&
+//   locY < this.mapArr[i].locY + this.mapArr[i].dimY &&
+//   locY + dimY > this.mapArr[i].locY
+// ) {
+//   console.log('Collision Detected!')
 
-  // initial room
-  let xa1 = locX
-  let ya1 = locY
-  let xb1 = locX + dimX
-  let yb1 = locY + dimY
+//   // initial room
+//   let xa1 = locX
+//   let ya1 = locY
+//   let xb1 = locX + dimX
+//   let yb1 = locY + dimY
 
-  // rooms around
-  let xa2 = this.mapArr[i].locX
-  let ya2 = this.mapArr[i].locY
-  let xb2 = this.mapArr[i].locX + this.mapArr[i].dimX
-  let yb2 = this.mapArr[i].locY + this.mapArr[i].locY
+//   // rooms around
+//   let xa2 = this.mapArr[i].locX
+//   let ya2 = this.mapArr[i].locY
+//   let xb2 = this.mapArr[i].locX + this.mapArr[i].dimX
+//   let yb2 = this.mapArr[i].locY + this.mapArr[i].locY
 
-  let diag1x = Math.abs(xa1 - xb2) // inner topLeft - bottomRight
-  let diag1y = Math.abs(ya1 - yb2) // inner topLeft - bottomRight
-  let diag2x = Math.abs(xb1 - xa2) // outer topLeft - bottomRight
-  let diag2y = Math.abs(yb1 - ya2) // outer topLeft - bottomRight
+//   let diag1x = Math.abs(xa1 - xb2) // inner topLeft - bottomRight
+//   let diag1y = Math.abs(ya1 - yb2) // inner topLeft - bottomRight
+//   let diag2x = Math.abs(xb1 - xa2) // outer topLeft - bottomRight
+//   let diag2y = Math.abs(yb1 - ya2) // outer topLeft - bottomRight
 
-  console.log(diag1x)
-  console.log(diag1y)
-  console.log(diag2x)
-  console.log(diag2y)
+//   console.log(diag1x)
+//   console.log(diag1y)
+//   console.log(diag2x)
+//   console.log(diag2y)
 
-  // Check for top collision
-  // if (
-  //   diag1y < diag2y &&
-  //   diag1y < diag1x &&
-  //   diag1y < diag2x
-  // ) {
-  //   console.log('top collision')
-  // }
-  // Check for top collision
-  if (diag1y < diag2y) {
-    if (diag1y < diag1x && diag1y < diag2x) {
-      console.log('top collision')
-    } else if (diag1x < diag2x) {
-      console.log('topLeft collision')
-    } else {
-      console.log('topRight collision')
-    }
-  }
+//   // Check for top collision
+//   // if (
+//   //   diag1y < diag2y &&
+//   //   diag1y < diag1x &&
+//   //   diag1y < diag2x
+//   // ) {
+//   //   console.log('top collision')
+//   // }
+//   // Check for top collision
+//   if (diag1y < diag2y) {
+//     if (diag1y < diag1x && diag1y < diag2x) {
+//       console.log('top collision')
+//     } else if (diag1x < diag2x) {
+//       console.log('topLeft collision')
+//     } else {
+//       console.log('topRight collision')
+//     }
+//   }
 
-  // Check for right collision
-  if (
-    diag1x < diag2x &&
-    diag1x < diag1y &&
-    diag1x < diag2y
-  ) {
-    console.log('right collision')
-  }
+//   // Check for right collision
+//   if (
+//     diag1x < diag2x &&
+//     diag1x < diag1y &&
+//     diag1x < diag2y
+//   ) {
+//     console.log('right collision')
+//   }
 
-  // Check for bottom collision
-  if (diag2y < diag1y) {
-    if (diag2y < diag1x && diag2y < diag2x) {
-      console.log('bottom collision')
-    } else if (diag1x < diag2x) {
-      console.log('bottomLeft collision')
-    } else {
-      console.log('bottomRight collision')
-    }
-  }
+//   // Check for bottom collision
+//   if (diag2y < diag1y) {
+//     if (diag2y < diag1x && diag2y < diag2x) {
+//       console.log('bottom collision')
+//     } else if (diag1x < diag2x) {
+//       console.log('bottomLeft collision')
+//     } else {
+//       console.log('bottomRight collision')
+//     }
+//   }
 
-  // Check for left collision
-  if (
-    diag2x < diag1x &&
-    diag2x < diag2y &&
-    diag2x < diag1y
-  ) {
-    console.log('right collision')
-  }
-}
+//   // Check for left collision
+//   if (
+//     diag2x < diag1x &&
+//     diag2x < diag2y &&
+//     diag2x < diag1y
+//   ) {
+//     console.log('right collision')
+//   }
+// }
 
-// Delete this after checks
-if (collision !== 'none') {
-  console.log(collision)
-}
+// // Delete this after checks
+// if (collision !== 'none') {
+//   console.log(collision)
+// }
 
-if (
-  collCount > 1 && 
-  dimX > this.max / 2 && 
-  dimY > this.max / 2
-) {
-  // divide room by 2
-  // then check again
-  dimX = dimX / 2
-  dimY = dimY / 2 
-  this.checkIntersect(locX, locY, dimX, dimY)
-} else if (collCount > 1) {
-  // delete the room
-  collision = {
-    locX: 0,
-    locY: 0,
-    dimX: 0,
-    dimY: 0
-  }
-}
+// if (
+//   collCount > 1 && 
+//   dimX > this.max / 2 && 
+//   dimY > this.max / 2
+// ) {
+//   // divide room by 2
+//   // then check again
+//   dimX = dimX / 2
+//   dimY = dimY / 2 
+//   this.checkIntersect(locX, locY, dimX, dimY)
+// } else if (collCount > 1) {
+//   // delete the room
+//   collision = {
+//     locX: 0,
+//     locY: 0,
+//     dimX: 0,
+//     dimY: 0
+//   }
+// }
 
-switch (collision) {
-  case 'collides top':
-    let dist = (r2.y + r2.h) - r1.y
-    locY = locY + dist + this.doorSize
-    this.checkIntersect(locX, locY, dimX, dimY)
-    break
+// switch (collision) {
+//   case 'collides top':
+//     let dist = (r2.y + r2.h) - r1.y
+//     locY = locY + dist + this.doorSize
+//     this.checkIntersect(locX, locY, dimX, dimY)
+//     break
 
-  case 'collides right':
+//   case 'collides right':
     
-    break
+//     break
 
-  case 'collides bottom':
+//   case 'collides bottom':
     
-    break
+//     break
 
-  case 'collides left':
+//   case 'collides left':
     
-    break
+//     break
 
-  default:
-    break
-}
+//   default:
+//     break
+// }
 
 
 
@@ -1592,3 +1592,233 @@ switch (collision) {
 //   }
 // }
 
+
+
+
+
+
+
+
+
+
+// export default class Room {
+//   constructor(minX,minY,maxX,maxY){
+//     this.minX = minX;
+//     this.minY = minY;
+//     this.maxX = maxX;
+//     this.maxY = maxY;
+//     this.side=0;
+//     this.children = [];
+//   }
+
+//   addRoom(room){
+//       room.side = this.side+=1;
+//       this.children.push(room);
+//   }
+
+//   // static isRoomInsideAABB(room) {
+//   //     return (room.x >= this.minX && room.x <= this.maxX) &&
+//   //         (room.y >= this.minY && room.y <= this.maxY);
+//   // }
+  
+
+//   static checkIntersect (room) {
+//     this.mapArr.forEach((v,k) => {
+//       if (v.id !== room.id) {
+//         const dx = (room.locX + room.dimX / 2) - (v.locX + v.dimX / 2)
+//         const dy = (room.locY + room.dimY / 2) - (v.locY + v.dimY / 2)
+//         const width = (room.dimX + v.dimX) / 2
+//         const height = (room.dimY + v.dimY) / 2
+//         const crossWidth = width * dy
+//         const crossHeight = height * dx
+  
+//         if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
+//           console.log('Collision Detected!!!')
+//           room.coll++
+//           if (crossWidth < crossHeight) {
+//             collision = crossWidth > -crossHeight ? 'left' : 'bottom'
+//           } else {
+//             collision = crossWidth > -crossHeight ? 'top' : 'right'
+//           }
+  
+//           console.log('calc dist')
+//           dist = this.genCollision[collision](v, room)
+  
+//           // Delete after debugging
+//           if (dist > 0) {
+//             console.log('Dist:', dist)
+//           }
+//         }
+//       }
+//     })
+//   }
+// }
+
+// main = new Room(0,0,10,10)
+// top = new Room(0,0,10,10)
+ 
+// main.addRoom(top)
+
+// const checkIntersect = (room) => {
+//   console.log('checking intersect')
+//   let collision = 'none'
+//   let dist = 0
+
+//   this.mapArr.forEach((v,k) => {
+//     if (v.id !== room.id) {
+//       const dx = (room.locX + room.dimX / 2) - (v.locX + v.dimX / 2)
+//       const dy = (room.locY + room.dimY / 2) - (v.locY + v.dimY / 2)
+//       const width = (room.dimX + v.dimX) / 2
+//       const height = (room.dimY + v.dimY) / 2
+//       const crossWidth = width * dy
+//       const crossHeight = height * dx
+
+//       if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
+//         console.log('Collision Detected!!!')
+//         room.coll++
+//         if (crossWidth < crossHeight) {
+//           collision = crossWidth > -crossHeight ? 'left' : 'bottom'
+//         } else {
+//           collision = crossWidth > -crossHeight ? 'top' : 'right'
+//         }
+
+//         console.log('calc dist')
+//         dist = this.genCollision[collision](v, room)
+
+//         // Delete after debugging
+//         if (dist > 0) {
+//           console.log('Dist:', dist)
+//         }
+//       }
+//     }
+//   })
+
+//   if (room.coll > 1) {
+//     console.log('Collision Counter1: ', room.coll)
+//     return {rom: room, collision: 'delete', dist: 0}
+//   } else {
+//     console.log('Collision Counter2: ', room.coll)
+//     return {rom: room, collision, dist}
+//   }
+// }
+
+
+
+
+
+
+// createMap(that) {
+//   let canvas = document.createElement('canvas')
+//   canvas.id = 'tmp'
+//   document.body.appendChild(canvas)
+
+//   this.canvas = document.getElementById('tmp')
+//   this.context = this.canvas.getContext('2d')
+
+//   this.canvas.width = that.map.size[0]
+//   this.canvas.height = that.map.size[1]
+
+//   let box = {
+//     loc: [0,0],
+//     size: [200,200]
+//   }
+
+//   let box2 = {
+//     loc: [0,0],
+//     size: [40,201]
+//   }
+
+//   console.log((that.youEntity.x) - (box.size[0] / 2))
+//   console.log((that.youEntity.y) - (box.size[1] / 2))
+
+//   box.loc = [
+//     (that.youEntity.x) - (box.size[0] / 2),
+//     (that.youEntity.y) - (box.size[1] / 2)
+//   ]
+//   box2.loc = [
+//     box.loc[0] + box.size[0] - box2.size[0],
+//     box.loc[1] - box2.size[1] + 1
+//   ]
+
+//   entityRect(
+//     this.context, 
+//     box.loc[0], box.loc[1], 
+//     box.size[0], box.size[1], 
+//     'white'
+//   )
+
+//   entityRect(
+//     this.context, 
+//     box2.loc[0], box2.loc[1], 
+//     box2.size[0], box2.size[1], 
+//     'white'
+//   )
+
+//   return this.canvas.toDataURL('image/png')
+// }
+
+
+
+      // // Find the verical & horizontal distX/distY between 
+      // // the center of the circle and the center of the square
+      // let distX = Math.abs(x - enmi.loc[0] - enmi.dim[0]/2)
+      // let distY = Math.abs(y - enmi.loc[1] - enmi.dim[1]/2)
+
+      // // If the distance is > than halves === not close enough
+      // if (distX > (enmi.dim[0]/2 + 10)) { collided = false }
+      // if (distY > (enmi.dim[1]/2 + 10)) { collided = false }
+
+      // // If distance is < than halfRect === colliding
+      // if (distX <= (enmi.dim[0]/2)) { collided = true }
+      // if (distX <= (enmi.dim[1]/2)) { collided = true }
+
+      // // Pythangorean Theorem to compare
+      // let dx = distX - enmi[0]/2
+      // let dy = distY - enmi[1]/2
+      // if (dx * dx + dy * dy <= 15*15) { collided = true }
+
+      // if (collided === true) { console.log('deleat meh plz 2') } 
+
+      // if (
+      //   rect1.x < rect2.x + rect2.width &&
+      //   rect1.x + rect1.width > rect2.x &&
+      //   rect1.y < rect2.y + rect2.height &&
+      //   rect1.height + rect1.y > rect2.y
+      // ) {
+        
+      // }
+
+      // if (
+      //   x < v.locX + v.dimX &&
+      //   x + 15 > v.locX &&
+      //   y < v.locY + v.dimY &&
+      //   y + 15 > v.locY
+      // ) {
+      //   console.log('remove enemy')
+      // }
+
+      // console.log('1')
+      // console.log(x + 5, (locX - v.locX) + 15, x + 5 < (locX - v.locX) + 15)
+      // console.log(x - 5, locX - v.locX, x - 5 > (locX - v.locX))
+      // console.log(y + 5, (locY - v.locY) + 15, y + 5 < (locY - v.locX) + 15)
+      // console.log(y - 5, locY - v.locY, y - 5 > (locY - v.locY))
+
+      // if (
+      //   x + 20 <= (locX - v.locX) + 20 &&
+      //   x - 15 >= (locX - v.locX) &&
+      //   y + 15<= (locY - v.locY) + 20 &&
+      //   y - 15 >= (locY - v.locY)
+      // ) {
+      //   console.log('deleat meh plz 2')
+      // }
+
+
+  // // white = move
+  // if (
+  //   data[0] === 255 &&
+  //   data[1] === 255 &&
+  //   data[2] === 255 &&
+  //   data[3] === 255
+  // ) {
+  //   return true
+  // }

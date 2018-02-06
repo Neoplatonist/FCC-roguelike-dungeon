@@ -2,6 +2,8 @@ module.exports = {
   canvas: 0,
   context: 0,
 
+  doorSize: [3, 3],
+
   entities: 0,
 
   keyMap: {
@@ -18,7 +20,8 @@ module.exports = {
   maps: {
     img: new Image(),
     loc: [0,0],
-    size: [1920,1080]
+    size: [1920,1080],
+    startDiff: [0,0]
   },
 
   move: {
@@ -28,18 +31,12 @@ module.exports = {
     right: false
   },
 
-  player: {
-    weapon: 'fists',
-    health: 100,
-    level: 1,
-    xp: 0
-  },
-
+  // speed: 2.5,
   speed: 5,
 
   youEntity: {
     x: 0,
     y: 0,
-    r: 10
+    dim: 10
   }
 }

@@ -73,8 +73,22 @@ export default class Items {
       itemList.weapons[level][lvl].min, 
       itemList.weapons[level][lvl].max
     )
-    
+
     item.name = itemList.weapons[level][lvl].name
+
+    return item
+  }
+
+  startWeapon() {
+    let item = { ...initItem }
+
+    item.color = 'orange'
+    item.damage = rand(
+      itemList.weapons[0][0].min, 
+      itemList.weapons[0][0].max
+    )
+
+    item.name = itemList.weapons[0][0].name
 
     return item
   }

@@ -2,7 +2,7 @@ import { rand } from '../utils'
 import Item from '../items'
 import Enemies from '../enemies'
 
-const mapSize = [1920, 1080]
+const mapSize = [192, 108]
 // const mapSize = [20, 30]
 let roomObj = {
   coll: 0,
@@ -14,24 +14,29 @@ let roomObj = {
   id: 0
 }
 
+// TODO:
+// Need to make door syntax/api
+//  simliar to that of room.
+// Door currently uses door.coords[] and door.doorsize[]
+//  when room uses room.locX/locY or room.dimX/dimY
+
 export default class Map {
-  constructor() {
-    [ this.min , this.max ] = [ 120, 300 ]
+  constructor(doorSize, mapLvl) {
+    [ this.min , this.max ] = [ 12, 30 ]
 
     this.doors = []
-    this.doorSize = [30, 30]
+    this.doorSize = [3,3]
     this.item = new Item()
     this.items = []
     this.enemy = new Enemies()
     this.enemies = []
     // this.hallPad = 80
-    this.limit = 500
     this.lvl = 1
     this.mapArr = []
-    this.numOfRooms = 10
+    this.mapLvl = mapLvl
     this.placed = {
       boss: false,
-      stairs: false,
+      portal: false,
       weapon: false
     }
     this.prevRoom = {
@@ -42,11 +47,17 @@ export default class Map {
   }
 
   init() {
+    this.items = []
+    this.enemies = []
+    this.rooms = []
+
     this.createFirstRoom()
     this.createRooms()
     this.randomSquares()
+  }
 
-    console.log(this.mapArr)
+  startWeapon() {
+    return this.item.startWeapon()
   }
 
   genCollision = {
@@ -73,13 +84,17 @@ export default class Map {
     'top': (room) => {
       return {
         coords: [
-          rand(room.locX + this.doorSize[0], room.locX + room.dimX - this.doorSize[0]),
+          rand(
+            room.locX + this.doorSize[0], 
+            room.locX + room.dimX - this.doorSize[0]
+          ),
           room.locY - this.doorSize[1]
         ],
         dir: 'top',
         doorSize: [this.doorSize[0], this.doorSize[1]]
       }
     },
+
     'right': (room) => {
       return {
         coords: [
@@ -93,6 +108,7 @@ export default class Map {
         doorSize: [this.doorSize[0], this.doorSize[1]]
       }
     },
+
     'bottom': (room) => {
       console.log('genDoor bottom coords:')
       console.log(room.locX + this.doorSize[0])
@@ -109,12 +125,13 @@ export default class Map {
         doorSize: [this.doorSize[0], this.doorSize[1]]
       }
     },
+
     'left': (room) => {
       return {
         coords: [
           room.locX - this.doorSize[0],
           rand(
-            room.locY + this.doorSize, 
+            room.locY + this.doorSize[1], 
             room.locY + room.dimY - this.doorSize[1]
           )
         ],
@@ -149,6 +166,11 @@ export default class Map {
         console.log('key', doorIndex)
         rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
         console.log('moveRoom genRoom obj', rom)
+
+        if (rom != undefined && (rom.dimX < this.min || rom.dimY < this.min)) {
+          rom = undefined
+          this.mapArr[roomIndex].doors[doorIndex] = undefined
+        }
       }
 
       // if (rom != undefined || rom != null) {
@@ -191,6 +213,11 @@ export default class Map {
         console.log('door key', doorIndex)
         console.log('genRoom right obj before move', rom)
         rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
+
+        if (rom != undefined && (rom.dimX < this.min || rom.dimY < this.min)) {
+          rom = undefined
+          this.mapArr[roomIndex].doors[doorIndex] = undefined
+        }
       }
 
       // if (rom != undefined || rom != null) {
@@ -211,18 +238,11 @@ export default class Map {
     'bottom': (roomIndex, doorIndex, prevDoor, room) => {
       console.log('Room Bottom', room.id)
 
-      console.log(prevDoor.coords[0])
-      console.log(room.dimX)
-      console.log(prevDoor.doorSize)
-      console.log(prevDoor.coords[0] + room.dimX - prevDoor.doorSize)
-
       room.locX = rand(
-        prevDoor.coords[0],
-        prevDoor.coords[0] + room.dimX - prevDoor.doorSize
+        prevDoor.coords[0] - room.dimX + prevDoor.doorSize[0],
+        prevDoor.coords[0]
       )
-      room.locY = prevDoor.coords[1] - room.dimY
-
-      console.log('bottoms locX:', room.locX)
+      room.locY = prevDoor.coords[1] + prevDoor.doorSize[1]
 
       let { rom, collision, dist } = this.checkIntersect(room)
 
@@ -241,6 +261,11 @@ export default class Map {
         console.log('door key', doorIndex)
         console.log('genRoom right obj before move', rom)
         rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
+
+        if (rom != undefined && (rom.dimX < this.min || rom.dimY < this.min)) {
+          rom = undefined
+          this.mapArr[roomIndex].doors[doorIndex] = undefined
+        }
       }
 
       // if (rom != undefined || rom != null) {
@@ -258,22 +283,53 @@ export default class Map {
       return rom
     },
 
-    'left': (i, prevDoor, room) => {
-      console.log('attempted to create left door')
-      //   room.locX = prevDoor.coords[0] - this.doorSize
-      //   room.locY = rand(
-      //     prevDoor.coords[1] - room.dimY + this.doorSize,
-      //     prevDoor.coords[1]
-      //   )
+    'left': (roomIndex, doorIndex, prevDoor, room) => {
+      console.log('Room Left', room.id)
 
-      //   console.log(room.id)
-      //   console.log('Room Left')
-      //   room.doors = this.checkWalls(room.locX, room.locY, room.dimX, room.dimY, 'right')
-      //   this.checkIntersect(room.locX, room.locY, room.dimX, room.dimY)
-      //   this.mapArr.push(room)
+      room.locX = prevDoor.coords[0] - room.dimX
+      room.locY = rand(
+        prevDoor.coords[1] - room.dimY + this.doorSize[1],
+        prevDoor.coords[1]
+      )
+
+      let { rom, collision, dist } = this.checkIntersect(room)
+
+      console.log('id:',rom.id)
+      
+      if (collision === 'delete' && dist === 0) {
+        console.log('deleted room')
+        // probably need to push this into a new function 
+        // and call lower in the chain to prevent premature
+        // deletion of the doors in prev object.
+
+        // prevDoor = undefined 
+        this.mapArr[roomIndex].doors[doorIndex] = undefined
+        rom = undefined
+      } else if (dist > 0 && (rom != null || rom != undefined)) {
+        console.log('door key', doorIndex)
+        console.log('genRoom right obj before move', rom)
+        rom = this.moveRoom(roomIndex, doorIndex, rom, prevDoor.dir, collision, dist)
+
+        if (rom != undefined && (rom.dimX < this.min || rom.dimY < this.min)) {
+          rom = undefined
+          this.mapArr[roomIndex].doors[doorIndex] = undefined
+        }
+      }
+     
+
+      // if (rom != undefined || rom != null) {
+      //   rom.doors = this.createDoors(rom, this.genDoorInv[prevDoor.dir]())
+      //   console.log(room)
+      //   this.mapArr.push(rom)
       //   // this.createRooms()
-      // return room
-      return undefined
+      // }
+
+      // room.doors = this.createDoors(room, 'left')
+
+      // this.mapArr.push(room)
+      // this.createRooms()
+
+      return rom
     }
   }
 
@@ -292,25 +348,36 @@ export default class Map {
     },
     'right': (dist, door, room, prevRoom) => {
       console.log('top door right')
-      room.locY = room.locY + dist
-      room.dimY = room.dimY - dist
+      room.locY += dist
+      room.dimY -= dist
 
-      // checks within dimensions of prevRoom
-      if (
-        door.coords[1] < prevRoom.locY ||
-        door.coords[1] + door.doorSize[1] > prevRoom.locY + prevRoom.dimY ||
-        room.dimY < door.doorSize[1]
-      ) {
+      // // checks within dimensions of prevRoom
+      // if (
+      //   door.coords[1] < prevRoom.locY ||
+      //   door.coords[1] + door.doorSize[1] > prevRoom.locY + prevRoom.dimY ||
+      //   room.dimY < door.doorSize[1]
+      // ) {
+      //   door = undefined
+      //   room = undefined
+      // } 
+      
+      // if (door != undefined) {
+      //   if (
+      //     door.coords[1] < room.locY ||
+      //     door.coords[1] + door.doorSize[1] > room.locY + room.dimY
+      //   ) {
+      //     door.coords[1] = room.locY
+      //   }
+      // }
+
+      if (room.locY + door.doorSize[1] > prevRoom.locY + prevRoom.dimY) {
         door = undefined
         room = undefined
-      } 
-      
-      if (door != undefined) {
-        if (
-          door.coords[1] < room.locY ||
-          door.coords[1] + door.doorSize[1] > room.locY + room.dimY
-        ) {
-          door.locY = room.locY
+      }
+
+      if (room != undefined) {
+        if (room.locY > door.coords[1]) {
+          door.coords[1] = room.locY
         }
       }
 
@@ -318,10 +385,28 @@ export default class Map {
     },
     'bottom': (dist, door, room, prevRoom) => {
       console.log('top door bottom')
+      room.locY += dist
+      room.dimY -= dist
+      door.doorSize[1] += dist
+    
       return {door, room}
     },
     'left': (dist, door, room, prevRoom) => {
       console.log('top door left')
+      room.locY += dist
+      room.dimY -= dist
+
+      if (room.locY > prevRoom.locY + prevRoom.dimY - door.doorSize[1]) {
+        door = undefined
+        room = undefined
+      }
+
+      if (room != undefined) {
+        if (room.locY > door.coords[1]) {
+          door.coords[1] = room.locY
+        }
+      }
+
       return {door, room}
     }
   }
@@ -329,18 +414,54 @@ export default class Map {
   genCollRight = {
     'top': (dist, door, room, prevRoom) => {
       console.log('right door top')
+      room.dimX -= dist
+
+      if (room.locX + room.dimX < prevRoom.locX + door.doorSize[0]) {
+        door = undefined
+        room = undefined
+      }
+
+      if (room != undefined) {
+        if (room.locX + room.dimX < door.coords[0] + door.doorSize[0]) {
+          door.coords[0] = room.locX + room.dimX - door.doorSize[0]
+        }
+      }
+
       return {door, room}
     },
     'right': (dist, door, room, prevRoom) => {
       console.log('right door right')
+      room.dimX -= dist
+      
       return {door, room}
     },
     'bottom': (dist, door, room, prevRoom) => {
       console.log('right door bottom')
+      room.locX += dist
+      room.dimX -= dist
+
+      if (room.locX + room.dimX < prevRoom.locX + door.doorSize[0]) {
+        door = undefined
+        room = undefined
+      }
+
+      if (room != undefined) {
+        if (room.locX + room.dimX < door.coords[0] + door.doorSize[0]) {
+          door.coords[0] = room.locX + room.dimX + door.doorSize[0]
+        }
+
+        if (room.locX > door.coords[0]) {
+          door.coords[0] = room.locX
+        }
+      }
+
       return {door, room}
     },
     'left': (dist, door, room, prevRoom) => {
       console.log('right door left')
+      room.locX += dist
+      room.dimX -= dist
+
       return {door, room}
     }
   }
@@ -349,6 +470,8 @@ export default class Map {
     'top': (dist, door, room, prevRoom) => {
       console.log('bottom door top')
       room.dimY -= dist
+      door.coords[1] -= dist
+      door.doorSize[1] += dist
 
       // checks within dimensions of prevRoom
       if (room.dimY < door.doorSize[1]) {
@@ -360,15 +483,44 @@ export default class Map {
     },
     'right': (dist, door, room, prevRoom) => {
       console.log('bottom door right')
-      room.dimY = room.dimY - dist
+      room.locY += dist
+      room.dimY -= dist
+
+      if (room.locY + room.dimY - door.doorSize[1] < prevRoom.locY) {
+        door = undefined
+        room = undefined
+      }
+
+      if (room != undefined) {
+        if (room.locY + room.dimY < door.coords[1] + door.doorSize[1]) {
+          door.coords[1] = room.locY + room.dimY - door.doorSize[1]
+        }
+      }
+
       return {door, room}
     },
     'bottom': (dist, door, room, prevRoom) => {
       console.log('bottom door bottom')
+      room.dimY -= dist
+
       return {door, room}
     },
     'left': (dist, door, room, prevRoom) => {
       console.log('bottom door left')
+      room.locY += dist
+      room.dimY -= dist
+
+      if (room.locY + room.dimY < prevRoom.locY) {
+        door = undefined
+        room = undefined
+      }
+
+      if (room != undefined) {
+        if (room.locY + room.dimY < door.coords[1]) {
+          door.coords[1] = room.locY + room.dimY - door.doorSize[1]
+        }
+      }
+
       return {door, room}
     }
   }
@@ -378,6 +530,18 @@ export default class Map {
       console.log('left door top')
       room.locX = room.locX + dist
       room.dimX = room.dimX - dist
+
+      if (room.locX > prevRoom.locX + prevRoom.dimX) {
+        door = undefined
+        room = undefined
+      }
+
+      if (door != undefined) {
+        if (room.locX > door.coords[0]) {
+          door.coords[0] = room.locX
+        }
+      }
+
       return {door, room}
     },
     'right': (dist, door, room, prevRoom) => {
@@ -388,10 +552,27 @@ export default class Map {
     },
     'bottom': (dist, door, room, prevRoom) => {
       console.log('left door bottom')
+      room.locX += dist
+      room.dimX -= dist
+
+      if (room.locX > prevRoom.locX + prevRoom.dimX) {
+        door = undefined
+        room = undefined
+      }
+
+      if (room != undefined) {
+        if (room.locX > door.coords[0] + door.doorSize[0]) {
+          door.coords[0] = room.locX
+        }
+      }
+
       return {door, room}
     },
     'left': (dist, door, room, prevRoom) => {
       console.log('left door left')
+      room.locX += dist
+      room.dimX -= dist
+
       return {door, room}
     }
   }
@@ -512,6 +693,9 @@ export default class Map {
     room.id = 0
 
     room.doors = this.createDoors(room)
+    if (room.doors.length === 0) {
+      room.doors = this.createDoors(room)
+    }
 
     this.mapArr.push(room)
   }
@@ -524,28 +708,27 @@ export default class Map {
   }
 
   createRoom(roomIndex, doorIndex, prevDoor) {
-    if (prevDoor.dir !== 'left') {
-      console.log('createRoom', prevDoor.dir)
-      console.log(prevDoor)
-      console.log(this.mapArr[roomIndex].doors[doorIndex])
+    console.log('createRoom', prevDoor.dir)
+    console.log(prevDoor)
+    console.log(this.mapArr[roomIndex].doors[doorIndex])
 
-      let room = Object.assign({}, roomObj)
+    let room = Object.assign({}, roomObj)
+    // let room = JSON.parse(JSON.stringify(roomObj))
 
-      room.dimX = rand(this.min, this.max)
-      room.dimY = rand(this.min, this.max)
-      room.id = this.mapArr.length
+    room.dimX = rand(this.min, this.max)
+    room.dimY = rand(this.min, this.max)
+    room.id = this.mapArr.length
 
-      console.log('key', doorIndex)
-      room = this.genRoom[prevDoor.dir](roomIndex, doorIndex, prevDoor, room)
+    console.log('key', doorIndex)
+    room = this.genRoom[prevDoor.dir](roomIndex, doorIndex, prevDoor, room)
 
-      console.log('createRoom obj before doors', room)
+    console.log('createRoom obj before doors', room)
 
-      if (room != undefined || room != null) {
-        room.doors = this.createDoors(room, this.genDoorInv[prevDoor.dir]())
-        console.log('createRoom obj before mapArr', room)
-        this.mapArr.push(room)
-        this.createRooms()
-      }
+    if (room != undefined || room != null) {
+      room.doors = this.createDoors(room, this.genDoorInv[prevDoor.dir]())
+      console.log('createRoom obj before mapArr', room)
+      this.mapArr.push(room)
+      this.createRooms()
     }
   }
 
@@ -582,6 +765,10 @@ export default class Map {
   }
 
   randomSquares() {
+    let weapon = rand(1, this.mapArr.length - 1)
+    let portal = rand(1, this.mapArr.length - 1)
+    let boss = rand(1, this.mapArr.length - 1)
+
     this.mapArr.forEach((v, k) => {
       let random = rand(0, 100)
 
@@ -589,57 +776,111 @@ export default class Map {
         let enemy = this.enemy.createEnemies(this.lvl)
 
         enemy.locX = rand(
-          v.locX + 20, 
-          v.locX + v.dimX - 20
+          v.locX + 2, 
+          v.locX + v.dimX - 4
         )
         enemy.locY = rand(
-          v.locY + 20, 
-          v.locY + v.dimY - 20
+          v.locY + 2, 
+          v.locY + v.dimY - 4
         )
 
         this.enemies.push(enemy)
 
-      } else if ((random > 20 && random < 40) || (random < 80 && random > 65)) {
+      } else if (
+        (random > 20 && random < 40) || (random < 80 && random > 65)
+      ) {
         let health = this.item.createHealth()
 
         health.locX = rand(
-          v.locX + 20, 
-          v.locX + v.dimX - 20
+          v.locX + 2, 
+          v.locX + v.dimX - 4
         )
         health.locY = rand(
-          v.locY + 20, 
-          v.locY + v.dimY - 20
+          v.locY + 2, 
+          v.locY + v.dimY - 4
         )
 
         this.items.push(health)
 
-      } else if (
-        !this.placed.weapon && 
-        ((random > 40 && random < 60) || k === this.numOfRooms-1)
-      ) {
+      } 
+      
+      if (this.placed.weapon === false && k === weapon) {
         let weapon = this.item.createWeapon(this.lvl)
 
         weapon.locX = rand(
-          v.locX + 20, 
-          v.locX + v.dimX - 20
+          v.locX + 2, 
+          v.locX + v.dimX - 4
         )
         weapon.locY = rand(
-          v.locY + 20, 
-          v.locY + v.dimY - 20
+          v.locY + 2, 
+          v.locY + v.dimY - 4
         )
 
         this.items.push(weapon)
         this.placed.weapon = true
       }
+
+      if (this.placed.portal === false && k === portal && this.mapLvl != 5) {
+        // console.log('making portal')
+        let portal = {
+          color: 'purple',
+          locX: 0,
+          locY: 0
+        }
+
+        portal.locX = rand(
+          v.locX + 2,
+          v.locX + v.dimX - 4
+        )
+
+        portal.locY = rand(
+          v.locY + 2,
+          v.locY + v.dimY - 4
+        )
+
+        this.items.push(portal)
+        this.placed.portal = true
+      }
+      
+      if (this.placed.boss === false && this.mapLvl === 5 && k === boss) {
+        let enemy = this.enemy.createBoss()
+
+        enemy.locX = rand(
+          v.locX + enemy.dims,
+          v.locX + v.dimX - enemy.dims
+        )
+
+        enemy.locY = rand(
+          v.locY + enemy.dims,
+          v.locY - v.dimY - enemy.dims
+        )
+
+        this.enemies.push(enemy)
+        this.placed.boss = true
+      }
     })
   }
 
   everything() {
-    // this.enemies //? 
     return {
       items: this.items,
       enemies: this.enemies,
       rooms: this.mapArr
+    }
+  }
+
+  updater(item, obj) {
+    switch (item) {
+      case 'item':
+        this.items = obj
+        break
+
+      case 'enemies':
+        this.enemies = obj
+        break
+
+      default:
+        break
     }
   }
 }
