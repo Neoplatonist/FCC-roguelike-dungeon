@@ -4,6 +4,8 @@ import Entities from './helpers/entities'
 import { checkBound } from './helpers/utils'
 import stateTree from './stateTree'
 
+import Modal from '../modal'
+
 /**
  *  TODO: Build Map
  *
@@ -31,6 +33,8 @@ export default class Main extends Component {
       },
 
       fog: true,
+      modal: false,
+      modalText: '',
       width: 900,
       height: 680
     }
@@ -170,13 +174,17 @@ export default class Main extends Component {
     let player = { ...this.state.player }
 
     do {
-      enemy.health -= player.damage
+      enemy.health -= player.damage + (player.damage * (player.lvl * 0.1))
       player.health -= enemy.damage
     } while (enemy.health >= 0 && player.health >= 0)
 
     if (player.health <= 0) {
       // Player has died
       console.log('You have died')
+      this.setState({
+         modal: true,
+         modalText: 'You have died.'
+        })
     } else {
       // TODO:
       // Add XP from enemy to player
@@ -189,6 +197,14 @@ export default class Main extends Component {
       player.lvl = lvl
       player.health = hp
       this.setState({ player })
+
+      if (enemy.dims === 30) {
+        this.setState({
+          modal: true,
+          modalText: 'You have beaten the dungeon!'
+        })
+      }
+
       let mapObj = this.entities.createMap(this.maps.size)
       this.maps.img.src = mapObj.data
       this.locked = false
@@ -391,9 +407,17 @@ export default class Main extends Component {
     this.locked = true
   }
 
+  handleModal = () => {
+    if (this.state.modal === true) {
+      return <Modal text={this.state.modalText} />
+    }
+  }
+
   render() {
     return (
       <main>
+
+        { this.handleModal() }
 
         <form>
           <label htmlFor="fog">Turn off Fog of War</label>

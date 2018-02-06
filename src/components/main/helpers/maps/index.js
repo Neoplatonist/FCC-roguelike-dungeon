@@ -31,7 +31,6 @@ export default class Map {
     this.enemy = new Enemies()
     this.enemies = []
     // this.hallPad = 80
-    this.lvl = 1
     this.mapArr = []
     this.mapLvl = mapLvl
     this.placed = {
@@ -773,7 +772,7 @@ export default class Map {
       let random = rand(0, 100)
 
       if (random < 20 || random > 80) {
-        let enemy = this.enemy.createEnemies(this.lvl)
+        let enemy = this.enemy.createEnemies(this.mapLvl)
 
         enemy.locX = rand(
           v.locX + 2, 
@@ -805,7 +804,7 @@ export default class Map {
       } 
       
       if (this.placed.weapon === false && k === weapon) {
-        let weapon = this.item.createWeapon(this.lvl)
+        let weapon = this.item.createWeapon(this.mapLvl)
 
         weapon.locX = rand(
           v.locX + 2, 
