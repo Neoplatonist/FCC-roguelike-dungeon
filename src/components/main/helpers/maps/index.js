@@ -846,12 +846,12 @@ export default class Map {
 
         enemy.locX = rand(
           v.locX + enemy.dims,
-          v.locX + v.dimX - enemy.dims
+          v.locX + v.dimX - enemy.dims * 2
         )
 
         enemy.locY = rand(
           v.locY + enemy.dims,
-          v.locY - v.dimY - enemy.dims
+          v.locY + v.dimY - enemy.dims
         )
 
         this.enemies.push(enemy)

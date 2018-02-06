@@ -31,8 +31,8 @@ module.exports = {
     right: false
   },
 
-  // speed: 2.5,
-  speed: 5,
+  speed: 2.5,
+  // speed: 5,
 
   youEntity: {
     x: 0,
