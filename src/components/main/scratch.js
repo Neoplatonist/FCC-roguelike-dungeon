@@ -1822,3 +1822,127 @@
   // ) {
   //   return true
   // }
+
+
+
+
+
+
+  // switch (dir) {
+    //   case 'top':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         // dist = (room.locX + room.dimX) - r2.x + this.doorSize
+    //         door.locY = door.locY - dist
+    //         room.dimY = room.dimY - dist
+    //         room.locY = room.locY + dist
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         // dist = r2.y - r1.y + this.doorSize
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         // dist = room.locX - r2.x + this.doorSize
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision top', dist)
+    //     break
+
+    //   case 'right':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         room.dimY = room.dimY - dist
+    //         room.locY = room.locY + dist
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision right', dist)
+    //     break
+
+    //   case 'bottom':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         // room.dimY = room.dimY - dist
+            
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision bottom')
+    //     break
+
+    //   case 'left':
+    //     switch (dorDir) {
+    //       // case 'top':            
+    //       //   console.log('door top')
+    //       //   break
+    
+    //       case 'right':
+    //         door.dimX = door.dimX + dist
+    //         room.locX = room.locX + dist
+    //         console.log('door right')
+    //         break
+    
+    //       case 'bottom':
+    //         console.log('door bottom')
+    //         break
+    
+    //       case 'left':
+    //         console.log('door left')
+    //         break
+        
+    //       default:
+    //         break
+    //     }
+
+    //     console.log('collision left')
+    //     break
+    
+    //   default:
+    //     break
+    // }
+
+    // return room

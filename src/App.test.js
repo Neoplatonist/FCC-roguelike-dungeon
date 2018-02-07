@@ -49,10 +49,11 @@ const mockCanvas = (window) => {
   
 it('renders without crashing', () => {
   mockCanvas(window)
+  window.HTMLCanvasElement.width = 600;
   const div = document.createElement('div')
 
   render(
-    <Provider store={store()}>
+    <Provider store={ store() }>
       <App />
     </Provider>, 
     div

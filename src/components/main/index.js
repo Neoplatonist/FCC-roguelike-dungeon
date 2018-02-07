@@ -413,27 +413,35 @@ export default class Main extends Component {
     }
   }
 
+  handleFog = e => {
+    this.setState({ fog: !this.state.fog })
+  }
+
   render() {
     return (
       <main>
 
         { this.handleModal() }
 
-        <form>
-          <label htmlFor="fog">Turn off Fog of War</label>
-          <input 
-            onClick={e => this.setState({fog: !this.state.fog})}
-            name="fog" 
-            type="checkbox"/>
-        </form>
+        <h4 className="notes">Press start and use W,A,S,D keys to move.</h4>
+        <h4 className="notes">
+          <ul>
+            <li id="enemy">Enemy</li>
+            <li id="health">Health</li>
+            <li id="weapon">Weapon</li>
+            <li id="portal">Portal</li>
+          </ul>
+        </h4>
 
         <Stats 
+          fog={this.state.fog}
           hp={this.state.player.health}
           xp={this.state.player.xp}
           dmg={this.state.player.damage}
           weapon={this.state.player.weapon}
           lvl={this.state.player.lvl}
           dungeonLvl={this.state.dungeonLvl}
+          changeFog={this.handleFog}
         />
 
         <canvas 
@@ -443,8 +451,10 @@ export default class Main extends Component {
           height={this.state.height}
         />
 
-        <button onClick={this.handleStart}>Start</button>
-        <button onClick={this.handleStop}>Stop</button>
+        <div className="controls">
+          <button onClick={this.handleStart}>Start</button>
+          <button onClick={this.handleStop}>Stop</button>
+        </div>
       </main>
     )
   }
